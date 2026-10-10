@@ -1,0 +1,10 @@
+Id,Name,Category,Description
+money,Money,Economy,"Currency for construction, trade, and wages"
+food,Food,LifeSupport,"Citizens consume food every day; farms produce it"
+water,Water,LifeSupport,"Citizens consume water every day; purification plants produce it"
+power,Power,Infrastructure,"Grid capacity in MW; generated and consumed by buildings"
+fuel,Fuel,Energy,"Burned by generators and power plants"
+materials,Construction Materials,Industry,"Used to construct and repair buildings"
+medicine,Medicine,Medical,"Spent at medical centers to cure latent infections"
+ammo,Ammunition,Military,"Phase 2: military and police upkeep"
+research,Research Points,Science,"Phase 2+: unlocks the tech tree"

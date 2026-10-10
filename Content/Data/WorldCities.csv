@@ -1,0 +1,246 @@
+City,Country,Latitude,Longitude,Population
+"New Delhi","India",20,77,1417492000
+"Beijing","China",35,105,1408280000
+"Jakarta","Indonesia",-5,120,284438782
+"Islamabad","Pakistan",30,70,241499431
+"Abuja","Nigeria",10,8,223800000
+"Dhaka","Bangladesh",24,90,169828911
+"Moscow","Russia",60,100,146028325
+"Tokyo","Japan",36,138,123300000
+"Manila","Philippines",13,122,114123600
+"Kinshasa","DR Congo",0,25,112832000
+"Addis Ababa","Ethiopia",8,38,111652998
+"Cairo","Egypt",27,30,107271260
+"Hanoi","Vietnam",16.16666666,107.83333333,101343800
+"Tehran","Iran",32,53,85961000
+"Ankara","Türkiye",39,35,85664944
+"Berlin","Germany",51,9,83517030
+"Paris","France",46,2,68688000
+"London","United Kingdom",54,-2,68265209
+"Dodoma","Tanzania",-6,35,68153004
+"Bangkok","Thailand",15,100,65859640
+"Pretoria","South Africa",-29,24,63100945
+"Rome","Italy",42.83333333,12.83333333,58919230
+"Nairobi","Kenya",1,38,53330978
+"Bogotá","Colombia",4,-72,53057212
+"Khartoum","Sudan",15,30,51662000
+"Seoul","South Korea",37,127.5,51159889
+"Madrid","Spain",40,-4,49315949
+"Algiers","Algeria",28,3,47400000
+"Buenos Aires","Argentina",-34,-64,46735004
+"Baghdad","Iraq",33,44,46118793
+"Kampala","Uganda",1,32,45905417
+"Kabul","Afghanistan",33,65,43844000
+"Ottawa","Canada",60,-95,41548787
+"Tashkent","Uzbekistan",41,64,37859698
+"Warsaw","Poland",52,20,37401000
+"Rabat","Morocco",32,-5,36828330
+"Luanda","Angola",-12.5,18.5,36170961
+"Riyadh","Saudi Arabia",25,45,35300280
+"Lima","Peru",-10,-76,34350244
+"Kuala Lumpur","Malaysia",2.5,112.5,34231700
+"Maputo","Mozambique",-18.25,35,34090466
+"Accra","Ghana",8,-2,33742380
+"Kyiv","Ukraine",49,32,32862000
+"Antananarivo","Madagascar",-20,47,31727042
+"Kathmandu","Nepal",28,84,29911840
+"Yamoussoukro","Ivory Coast",8,-5,29389150
+"Caracas","Venezuela",8,-66,28517000
+"Canberra","Australia",-27,133,27400013
+"Niamey","Niger",16,8,26312034
+"Pyongyang","North Korea",40,127,25950000
+"Damascus","Syria",35,38,25620000
+"Ouagadougou","Burkina Faso",13,-2,24070553
+"Taipei","Taiwan",23.5,121,23337936
+"Bamako","Mali",17,-4,22395489
+"Colombo","Sri Lanka",7,81,21763170
+"Lilongwe","Malawi",-13.5,34,20734262
+"Astana","Kazakhstan",48,68,20407844
+"Santiago","Chile",-30,-71,20206953
+"Lusaka","Zambia",-15,30,19693423
+"Mogadishu","Somalia",10,49,19655000
+"N'Djamena","Chad",15,19,19340757
+"Bucharest","Romania",46,25,19036031
+"Dakar","Senegal",14,-14,18593258
+"Quito","Ecuador",-2,-77.5,18103660
+"Amsterdam","Netherlands",52.5,5.75,18080943
+"Guatemala City","Guatemala",15.5,-90.25,18079810
+"Phnom Penh","Cambodia",13,105,17577760
+"Harare","Zimbabwe",-20,30,17073087
+"Juba","South Sudan",7,30,15786898
+"Conakry","Guinea",11,-10,14363931
+"Kigali","Rwanda",-2,30,14104969
+"Porto-Novo","Benin",9.5,2.25,13224860
+"Gitega","Burundi",-3.5,30,12332788
+"Tunis","Tunisia",34,9,11972169
+"Port-au-Prince","Haiti",19,-72.41666666,11867032
+"Brussels","Belgium",50.83333333,4,11825551
+"Port Moresby","Papua New Guinea",-6,147,11781559
+"Amman","Jordan",31,36,11734000
+"Sucre","Bolivia",-17,-65,11312620
+"Prague","Czechia",49.75,15.5,10876875
+"Santo Domingo","Dominican Republic",19,-70.66666666,10771504
+"Lisbon","Portugal",39.5,-8,10749635
+"Abu Dhabi","United Arab Emirates",24,54,10678556
+"Stockholm","Sweden",62,15,10596652
+"Dushanbe","Tajikistan",39,71,10499000
+"Athens","Greece",39,22,10400720
+"Baku","Azerbaijan",40.5,47.5,10241722
+"Jerusalem","Israel",31.47,35.13,10119400
+"Tegucigalpa","Honduras",15,-86.5,9892632
+"Havana","Cuba",21.5,-80,9748007
+"Budapest","Hungary",47,20,9539502
+"Vienna","Austria",47.33333333,13.33333333,9200931
+"Minsk","Belarus",53,28,9109280
+"Bern","Switzerland",47,8,9082848
+"Freetown","Sierra Leone",8.5,-11.5,9077691
+"Vientiane","Laos",18,105,7647000
+"Bishkek","Kyrgyzstan",41,75,7281800
+"Ashgabat","Turkmenistan",40,60,7057841
+"Managua","Nicaragua",13,-85,6803886
+"Belgrade","Serbia",44,21,6567783
+"Bangui","Central African Republic",7,21,6470307
+"Sofia","Bulgaria",43,25,6437360
+"Brazzaville","Congo",-1,15,6142180
+"Asunción","Paraguay",-23,-58,6109644
+"San Salvador","El Salvador",13.83333333,-88.91666666,6029976
+"Copenhagen","Denmark",56,10,6004342
+"Helsinki","Finland",64,26,5645651
+"Oslo","Norway",62,10,5606944
+"Beirut","Lebanon",33.83333333,35.83333333,5490000
+"Dublin","Ireland",53,-8,5458600
+"Bratislava","Slovakia",48.66666666,19.5,5413813
+"Wellington","New Zealand",-41,174,5324700
+"Muscat","Oman",21,57,5306976
+"Monrovia","Liberia",6.5,-9.5,5248621
+"Nouakchott","Mauritania",20,-12,4927532
+"Kuwait City","Kuwait",29.5,45.75,4881254
+"Panama City","Panama",9,-80,4064780
+"Zagreb","Croatia",45.16666666,15.5,3866233
+"Tbilisi","Georgia",42,43.5,3704500
+"Asmara","Eritrea",15,39,3607000
+"Ulan Bator","Mongolia",46,105,3544835
+"Montevideo","Uruguay",-33,-56,3499451
+"Sarajevo","Bosnia and Herzegovina",44,18,3422000
+"San Juan","Puerto Rico",18.25,-66.5,3203295
+"Doha","Qatar",25.5,51.25,3173024
+"Yerevan","Armenia",40,45,3081100
+"Windhoek","Namibia",-22,17,3022401
+"Vilnius","Lithuania",56,24,2894548
+"Libreville","Gabon",-1,11.75,2469296
+"Banjul","Gambia",13.46666666,-16.56666666,2422712
+"Tirana","Albania",41,20,2363314
+"Gaborone","Botswana",-22,24,2359609
+"Ljubljana","Slovenia",46.11666666,14.81666666,2130638
+"Maseru","Lesotho",-29.5,28.5,2116427
+"Riga","Latvia",57,25,1830400
+"Skopje","North Macedonia",41.83333333,22,1826247
+"Bissau","Guinea-Bissau",12,-15,1781308
+"Malabo","Equatorial Guinea",2,10,1668768
+"Manama","Bahrain",26,50.55,1594654
+"Pristina","Kosovo",42.666667,21.166667,1585566
+"Dili","Timor-Leste",-8.83333333,125.91666666,1391221
+"Tallinn","Estonia",59,26,1369995
+"Port of Spain","Trinidad and Tobago",11,-61,1368333
+"Port Louis","Mauritius",-20.28333333,57.55,1243741
+"Djibouti","Djibouti",11.5,43,1066809
+"Nicosia","Cyprus",35,33,966400
+"Suva","Fiji",-18,175,900869
+"Saint-Denis","Réunion",-21.15,55.5,896175
+"Moroni","Comoros",-12.16666666,44.25,870038
+"Thimphu","Bhutan",27.5,90.5,784043
+"Georgetown","Guyana",5,-59,772975
+"Honiara","Solomon Islands",-8,159,750325
+"Luxembourg","Luxembourg",49.75,6.16666666,681973
+"Podgorica","Montenegro",42.5,19.3,623327
+"Paramaribo","Suriname",4,-56,616500
+"Valletta","Malta",35.83333333,14.58333333,574250
+"Praia","Cape Verde",16,-24,491233
+"Bandar Seri Begawan","Brunei",4.5,114.66666666,455500
+"Belmopan","Belize",17.25,-88.75,417634
+"Nassau","Bahamas",24.25,-76,398165
+"Reykjavik","Iceland",65,-18,391810
+"Basse-Terre","Guadeloupe",16.25,-61.583333,373791
+"Fort-de-France","Martinique",14.666667,-61,339897
+"Mamoudzou","Mayotte",-12.83333333,45.16666666,337011
+"Port Vila","Vanuatu",-16,167,321409
+"Cayenne","French Guiana",4,-53,292354
+"Bridgetown","Barbados",13.16666666,-59.53333333,267800
+"Apia","Samoa",-13.58333333,-172.33333333,205557
+"Castries","Saint Lucia",13.88333333,-60.96666666,184100
+"Willemstad","Curaçao",12.116667,-68.933333,156115
+"Victoria","Seychelles",-4.58333333,55.66666666,122729
+"Kingstown","Saint Vincent and the Grenadines",13.25,-61.2,110872
+"St. George's","Grenada",12.11666666,-61.66666666,109021
+"Oranjestad","Aruba",12.5,-69.96666666,107566
+"Palikir","Micronesia",6.91666666,158.25,105564
+"Saint Helier","Jersey",49.25,-2.16666666,103267
+"Nuku'alofa","Tonga",-20,-175,100179
+"Andorra la Vella","Andorra",42.5,1.5,88306
+"Charlotte Amalie","United States Virgin Islands",18.35,-64.933333,87146
+"George Town","Cayman Islands",19.5,-80.5,84738
+"Roseau","Dominica",15.41666666,-61.33333333,67408
+"Hamilton","Bermuda",32.33333333,-64.75,64055
+"Nuuk","Greenland",72,-40,56542
+"Basseterre","Saint Kitts and Nevis",17.33333333,-62.75,51320
+"Cockburn Town","Turks and Caicos Islands",21.75,-71.58333333,50894
+"Pago Pago","American Samoa",-14.33333333,-170,49710
+"Saipan","Northern Mariana Islands",15.2,145.75,47329
+"Majuro","Marshall Islands",9,168,42418
+"Philipsburg","Sint Maarten",18.033333,-63.05,41349
+"Vaduz","Liechtenstein",47.26666666,9.53333333,40900
+"Road Town","British Virgin Islands",18.431383,-64.62305,39471
+"Monaco","Monaco",43.73333333,7.4,38423
+"Gibraltar","Gibraltar",36.13333333,-5.35,38000
+"Marigot","Saint Martin",18.08333333,-63.95,31496
+"Mariehamn","Åland Islands",60.116667,19.9,30654
+"Kralendijk","Caribbean Netherlands",12.18,-68.25,26552
+"The Valley","Anguilla",18.25,-63.16666666,16010
+"Avarua","Cook Islands",-21.23333333,-159.76666666,15040
+"Yaren","Nauru",-0.53333333,166.91666666,11680
+"Funafuti","Tuvalu",-8,178,10643
+"Gustavia","Saint Barthélemy",18.5,-63.41666666,10562
+"Saint-Pierre","Saint Pierre and Miquelon",46.83333333,-56.33333333,5819
+"Jamestown","Saint Helena, Ascension and Tristan da Cunha",-15.95,-5.72,5651
+"Plymouth","Montserrat",16.75,-62.2,4386
+"Stanley","Falkland Islands",-51.75,-59,3662
+"Kingston","Jamaica",18.25,-77.5,2188
+"Kingston","Norfolk Island",-29.03333333,167.95,2188
+"Flying Fish Cove","Christmas Island",-10.5,105.66666666,1692
+"Alofi","Niue",-19.03333333,-169.86666666,1681
+"Vatican City","Vatican City",41.9,12.45,882
+"West Island","Cocos (Keeling) Islands",-12.5,96.83333333,593
+"Adamstown","Pitcairn Islands",-25.06666666,-130.1,35
+"Port-aux-Français","French Southern and Antarctic Lands",-49.25,69.167,0
+"Saint John's","Antigua and Barbuda",17.05,-61.8,0
+"Brasília","Brazil",-10,-55,0
+"Yaoundé","Cameroon",6,12,0
+"San José","Costa Rica",10,-84,0
+"El Aaiún","Western Sahara",24.5,-13,0
+"Tórshavn","Faroe Islands",62,-7,0
+"St. Peter Port","Guernsey",49.46666666,-2.58333333,0
+"Hagåtña","Guam",13.46666666,144.78333333,0
+"City of Victoria","Hong Kong",22.267,114.188,0
+"Douglas","Isle of Man",54.25,-4.5,0
+"Diego Garcia","British Indian Ocean Territory",-6,71.5,0
+"South Tarawa","Kiribati",1.41666666,173,0
+"Tripoli","Libya",25,17,0
+"Chișinău","Moldova",47,29,0
+"Malé","Maldives",3.25,73,0
+"Mexico City","Mexico",23,-102,0
+"Naypyidaw","Myanmar",22,98,0
+"Nouméa","New Caledonia",-21.5,165.5,0
+"Ngerulmud","Palau",7.5,134.5,0
+"Ramallah","Palestine",31.9,35.2,0
+"Papeetē","French Polynesia",-15,-140,0
+"Singapore","Singapore",1.36666666,103.8,0
+"King Edward Point","South Georgia",-54.5,-37,0
+"Longyearbyen","Svalbard and Jan Mayen",78,20,0
+"City of San Marino","San Marino",43.76666666,12.41666666,0
+"São Tomé","São Tomé and Príncipe",1,7,0
+"Lobamba","Eswatini",-26.5,31.5,0
+"Lomé","Togo",8,1.16666666,0
+"Fakaofo","Tokelau",-9,-172,0
+"Washington D.C.","United States",38,-97,0
+"Mata-Utu","Wallis and Futuna",-13.3,-176.2,0
+"Sana'a","Yemen",15,48,0

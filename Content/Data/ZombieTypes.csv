@@ -1,0 +1,6 @@
+Id,Name,Hp,SpeedTilesPerSec,DamagePerSec,BiteChancePerSec,SightRadiusTiles,SmellRadiusTiles,BountyMoney,Behavior,Model,Description
+walker,Walker,30,0.8,5,0.25,6,12,10,chase,Monsters/monster_demon.gltf,"The standard shambling infected; hunts in packs"
+runner,Runner,50,2.2,6,0.5,8,16,25,hitandrun,Monsters/monster_blue_demon.gltf,"Fast and aggressive; strikes, then retreats to re-engage"
+tank,Tank,300,0.5,15,0.3,5,10,100,pushahead,Monsters/monster_orc.gltf,"Slow juggernaut that crushes walls and soldier lines"
+spitter,Spitter,80,0.7,4,0.2,6,14,50,snipe,Monsters/monster_creep_creature.glb,"Keeps its distance and spits corrosive bile that contaminates the ground"
+mutant,Mutant Brute,1000,1,30,0.4,7,18,500,pushahead,Monsters/monster_creep_creature.glb,"A boss-class abomination that leads the horde"

@@ -1,0 +1,6 @@
+Id,Name,ZombieActivityMultiplier,SolarPowerMultiplier,MoraleModifierPerDay,Description
+clear,Clear,1,1,0,"Clear skies"
+rain,Rain,0.8,0.6,-0.5,"Rain slows the dead and dims the sun"
+fog,Fog,1.1,0.8,0,"Fog hides the horde; they get closer before you see them"
+storm,Storm,0.6,0.3,-1,"Storms ground aircraft and sap morale"
+snow,Snow,0.5,0.9,-1.5,"Snow slows everything; solar panels still work"

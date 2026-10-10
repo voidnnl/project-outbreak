@@ -1,0 +1,12 @@
+Id,Name,Category,Rarity,Durability,Description
+pistol,Pistol,weapon,common,100,"Sidearm for militia squads"
+rifle,Assault Rifle,weapon,uncommon,150,"Standard infantry weapon"
+shotgun,Shotgun,weapon,uncommon,120,"Close-quarters weapon"
+sniper,Sniper Rifle,weapon,rare,150,"Long-range precision weapon"
+kevlar,Kevlar Vest,armor,uncommon,200,"Body armor for soldiers"
+medkit,Medkit,medical,common,5,"Heals citizens in the field"
+bandage,Bandage,medical,common,3,"Stops bleeding"
+wrench,Wrench,tool,common,100,"Repair tool for engineers"
+radio,Field Radio,electronics,rare,50,"Communications gear"
+battery,Battery,electronics,common,20,"Powers electronics"
+scrap,Scrap Electronics,material,common,0,"Salvaged components"

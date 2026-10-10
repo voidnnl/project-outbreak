@@ -35,6 +35,7 @@ struct FCitizen {
     bool bVaccinated = false;   // immune: cannot be infected
     bool bFemale = false;
     std::string Name;           // "First Last"
+    std::string TypeId = "civilian";  // CitizenTypes.csv; assigned without extra RNG
     float InfectionSecondsLeft = 0.f;
     float Panic = 0.f;          // 0..1
     float Hunger = 1.f;         // 0..1
@@ -96,6 +97,8 @@ struct FWall {
     float MaxHp = 1.f;
     bool bUnderConstruction = true;
     float BuildProgress = 0.f;
+    bool bCorner = false;  // auto-detected on turns of a wall line
+    bool bGate = false;    // converted crossing; weaker HP
 };
 
 struct FResources {
@@ -168,6 +171,39 @@ public:
 
     // --- versus mode (one player commands the virus) ------------------------
     i32 VirusSpawnHorde(i32 X, i32 Y, const std::string& TypeId, i32 Count);
+    bool VirusInfectTile(i32 X, i32 Y);
+    bool VirusContaminate(i32 X, i32 Y);
+    bool VirusBoostHorde();
+    i32 VirusMutate(const std::string& FromType, const std::string& ToType, i32 Count);
+
+    // --- campaign / tutorial / buildings / zones ----------------------------
+    bool StartCampaign(const std::string& CampaignId);
+    bool UpgradeBuilding(i32 BuildingId);
+    bool BuildWallGate(i32 WallId);
+    bool DesignateQuarantineZone(i32 District, bool bEnabled);
+    bool ApplyDifficulty(const std::string& DifficultyId);
+    void SetLanguage(const std::string& Lang);
+    void SetLocalRole(ECoopRole Role);
+    bool DismissHint();
+
+    // --- queries: campaign, heatmap, audio, localization, roles --------------
+    bool CanRoleIssue(ECoopRole Role, const std::string& Verb) const;
+    const std::vector<FObjective>& Objectives() const { return ObjectiveList; }
+    const std::vector<FAchievementUnlock>& Achievements() const { return AchievementList; }
+    const std::vector<FHint>& Hints() const { return HintList; }
+    const std::vector<char>& QuarantineDistricts() const { return QuarantineFlags; }
+    std::string CurrentSeason() const { return CurrentSeasonId; }
+    EMusicState MusicState() const;
+    std::string Localize(const std::string& Key) const;
+    float InfectionHeatAt(i32 X, i32 Y) const;
+    void FillHeatmap(std::vector<float>& Out, i32 Downsample = 2) const;
+    i32 ComputeLeaderboardScore() const;
+    double StorageCap() const;
+    float SeasonFoodMult() const;
+    float SeasonZombieMult() const;
+    float SeasonSolarMult() const;
+    float SeasonMoralePerDay() const;
+    bool FindPath(i32 X1, i32 Y1, i32 X2, i32 Y2, std::vector<std::pair<i32, i32>>& Out) const;
 
     // --- queries -------------------------------------------------------------
     const FDataTables& Data() const { return Tables; }
@@ -269,6 +305,10 @@ public:
     void DebugInfect(i32 CitizenId);
     i32 DebugSpawnZombie(const std::string& TypeId, float X, float Y);  // zombie id or -1
     void DebugTeleportCitizen(i32 CitizenId, float X, float Y);
+    i32 DebugAddObjective(const std::string& Id, const std::string& Kind, const std::string& Target, i32 Count);
+    void DebugUnlockAchievement(const std::string& Id);
+    void DebugSetSeason(const std::string& SeasonId);
+    bool DebugAddItem(const std::string& ItemId, i32 Count) { return AddItem(ItemId, Count); }
 
 private:
     void RunTick(float Dt);
@@ -283,6 +323,12 @@ private:
     void TickVaccination(float Dt);
     void TickCrafting(float Dt);
     void TickInternational(float Dt);
+    void TickSeasons(float Dt);
+    void TickCampaign(float Dt);
+    void TickAchievements();
+    void TickHints(float Dt);
+    void TickDemoMode(float Dt);
+    void TickAdaptiveDifficulty();
     void UpdateDistrictNetworks();
     void UpdateContamination(float Dt);
     void TickMorale(float Dt);
@@ -320,6 +366,13 @@ private:
     void KillZombie(i32 ZombieIndex, i32 SquadId);  // credit + removal
     void DamageSquad(FSquad& Squad, float Amount, i32 ZombieSource);
     void PendingStrikeTick(float Dt);  // airstrike/nuke delays
+    void PushHint(const std::string& HintId);
+    void ActivateCampaignObjectives();
+    void EvaluateObjective(FObjective& O);
+    bool IsDistrictQuarantined(i32 District) const;
+    void ClampResourcesToStorage();
+    void MarkWallCorners(size_t FromIndex);
+    void WearItem(const std::string& ItemId, float Amount);
 
     FDataTables Tables;
     FSimConfig Config;
@@ -414,6 +467,18 @@ private:
 
     EGameResult Result = EGameResult::Ongoing;
     std::string ResultReason;
+
+    // campaign / seasons / versus extras / zones (Phase 2-5)
+    std::vector<FObjective> ObjectiveList;
+    std::vector<FAchievementUnlock> AchievementList;
+    std::vector<FHint> HintList;
+    std::vector<char> QuarantineFlags;
+    std::string CurrentSeasonId = "spring";
+    float SeasonDaysLeft = 90.f;
+    float DifficultyBias = 1.f;
+    float VirusBoostTimer = 0.f;
+    std::string LastHintTrigger;
+    std::vector<std::string> ShownHintIds;
 };
 
 } // namespace oc

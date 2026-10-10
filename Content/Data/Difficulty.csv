@@ -1,0 +1,6 @@
+Id,Name,ZombieSpeedMultiplier,InfectionRateMultiplier,ResourceScarcityMultiplier,HordeBaseSize,Description
+story,Story,0.8,0.7,0.8,2,"Softer outbreak; intended for the first playthrough and the tutorial"
+normal,Normal,1.0,1.0,1.0,3,"The standard scenario tuning"
+hard,Hard,1.3,1.4,1.3,5,"Faster virus, leaner stockpiles, heavier hordes"
+nightmare,Nightmare,1.6,2.0,1.6,8,"For commanders who have already saved Kingsport"
+custom,Custom,1.0,1.0,1.0,3,"All values come from the scenario editor / rule overrides"

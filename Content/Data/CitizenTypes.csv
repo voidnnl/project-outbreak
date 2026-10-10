@@ -1,0 +1,6 @@
+Id,Name,NeedsHunger,NeedsThirst,Wage,Description
+civilian,Civilian,1.0,1.0,1.0,"Typical resident"
+doctor,Doctor,1.0,1.0,1.5,"Medical professional; higher wage when CitizenTypeNeedsEnabled"
+farmer,Farmer,1.1,1.2,0.8,"Agricultural worker"
+engineer,Engineer,1.0,1.0,1.2,"Infrastructure specialist"
+soldier,Soldier,1.1,1.1,1.1,"Military reservist living in the city"

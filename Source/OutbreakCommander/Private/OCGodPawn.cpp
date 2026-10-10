@@ -65,3 +65,19 @@ void AOCGodPawn::Pan(FVector2D Axis) { PanInput += Axis; }
 void AOCGodPawn::SetTargetArmLength(float Length) {
     TargetArmLength = FMath::Clamp(Length, MinArmLength, MaxArmLength);
 }
+
+void AOCGodPawn::FocusOnTile(int32 X, int32 Y, float ArmLength) {
+    SetActorLocation(FVector(X * TileSizeMeters, Y * TileSizeMeters, 0.f));
+    SetTargetArmLength(ArmLength);
+    if (SpringArm) SpringArm->TargetArmLength = TargetArmLength;
+}
+
+void AOCGodPawn::SnapToPreset(int32 PresetIndex) {
+    // Presets map onto the 96-tile city: overview, medical, farms, walls.
+    struct FPreset { int32 X, Y; float Arm; };
+    static const FPreset Presets[] = {
+        {48, 48, 18000.f}, {12, 6, 3500.f}, {6, 14, 3500.f}, {48, 80, 6000.f}
+    };
+    const int32 I = FMath::Clamp(PresetIndex, 0, 3);
+    FocusOnTile(Presets[I].X, Presets[I].Y, Presets[I].Arm);
+}

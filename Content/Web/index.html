@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Outbreak Commander</title>
+<style>
+@font-face{font-family:Chakra;src:url('/fonts/ChakraPetch-Regular.ttf') format('truetype')}
+@font-face{font-family:Chakra;src:url('/fonts/ChakraPetch-Bold.ttf') format('truetype');font-weight:700}
+@font-face{font-family:Orbitron;src:url('/fonts/Orbitron-Variable.ttf') format('truetype')}
+:root{--bg:#07090d;--panel:#10151dcc;--line:#2a3344;--gold:#e8a838;--red:#d4453a;--green:#3ecf8e;--muted:#8b97a8;--text:#e8eef6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:Chakra,system-ui,sans-serif;overflow:hidden}
+#map{position:absolute;inset:0;width:100%;height:100%;display:block;background:#0a1018;cursor:crosshair}
+#top,#left,#right,#bottom,#hint,#over{position:absolute;z-index:5;pointer-events:auto}
+#top{top:0;left:0;right:0;display:flex;gap:10px;align-items:center;padding:8px 14px;background:linear-gradient(#0d121ad9,#0d121a00);backdrop-filter:blur(6px)}
+.brand{font-family:Orbitron,sans-serif;letter-spacing:.12em;color:var(--gold);font-size:13px;margin-right:12px}
+.res{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}
+.res b{color:var(--gold);font-weight:700}
+.pill{padding:2px 8px;border:1px solid var(--line);border-radius:99px;font-size:12px;color:var(--muted)}
+#left{top:52px;left:8px;width:210px;bottom:58px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+#right{top:52px;right:8px;width:270px;bottom:58px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+#bottom{left:226px;right:286px;bottom:8px;display:flex;gap:8px;align-items:center;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+button,.btn{background:#1b2430;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;cursor:pointer;width:100%;text-align:left;margin:0 0 4px}
+button:hover,.btn:hover{border-color:var(--gold);color:var(--gold)}
+button.active{background:#2a2110;border-color:var(--gold);color:var(--gold)}
+button.tiny{width:auto;padding:6px 10px;margin:0}
+.obj{font-size:12px;padding:6px 0;border-bottom:1px solid #1c2430}
+.obj .bar{height:3px;background:#1c2430;margin-top:4px}
+.obj .bar>i{display:block;height:100%;background:var(--gold)}
+.ev{font-size:11px;color:var(--muted);padding:3px 0;border-bottom:1px solid #1c2430}
+#hint{left:50%;top:64px;transform:translateX(-50%);max-width:520px;background:#1a140ad4;border:1px solid var(--gold);border-radius:8px;padding:12px 14px;display:none}
+#hint h4{color:var(--gold);margin-bottom:4px}
+#over{inset:0;background:#07090de6;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:9}
+#over h1{font-family:Orbitron,sans-serif;color:var(--gold);font-size:28px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+small{color:var(--muted);font-size:11px}
+input[type=range]{width:90px}
+[dir=rtl] #left{left:auto;right:8px} [dir=rtl] #right{right:auto;left:8px}
+</style>
+</head>
+<body>
+<canvas id="map"></canvas>
+<div id="top">
+  <div class="brand">OUTBREAK COMMANDER</div>
+  <div class="res" id="res"></div>
+  <div style="margin-left:auto" class="row">
+    <span class="pill" id="clock"></span>
+    <span class="pill" id="weather"></span>
+    <select id="lang" class="tiny" style="background:#1b2430;color:#e8eef6;border:1px solid #2a3344;border-radius:6px;padding:4px">
+      <option value="en">EN</option><option value="de">DE</option><option value="fa">FA</option><option value="ar">AR</option>
+    </select>
+  </div>
+</div>
+<aside id="left">
+  <h3 id="h-build">Build</h3>
+  <div id="builds"></div>
+  <h3 id="h-mil">Military</h3>
+  <div id="mils"></div>
+  <h3 id="h-veh">Vehicles</h3>
+  <div id="vehs"></div>
+  <button id="b-strike">Airstrike</button>
+  <h3 id="h-craft">Craft</h3>
+  <div id="recs"></div>
+  <h3 id="h-pol">Policies</h3>
+  <button id="p-curfew">Curfew</button>
+  <button id="p-qua">Quarantine</button>
+  <button id="p-mar">Martial law</button>
+  <h3 id="h-int">International</h3>
+  <button id="b-aid">Request aid</button>
+  <button id="b-trade">Trade caravan</button>
+  <button id="b-evac">Evacuate</button>
+</aside>
+<aside id="right">
+  <h3 id="h-obj">Objectives</h3>
+  <div id="objs"></div>
+  <h3 id="h-al">Alerts</h3>
+  <div id="evs"></div>
+  <h3 id="h-tech">Research</h3>
+  <div id="techs"></div>
+</aside>
+<div id="bottom">
+  <button class="tiny" id="b-pause">Pause</button>
+  <button class="tiny" data-sp="1">1×</button>
+  <button class="tiny" data-sp="2">2×</button>
+  <button class="tiny" data-sp="4">4×</button>
+  <button class="tiny" id="b-heat">Heatmap</button>
+  <button class="tiny" id="b-save">Save</button>
+  <button class="tiny" id="b-load">Load</button>
+  <button class="tiny" id="b-new">New tutorial</button>
+  <small id="status">Command the city. Drag walls. Contain the virus.</small>
+</div>
+<div id="hint"><h4 id="ht"></h4><p id="hb"></p></div>
+<div id="over"><h1 id="ot"></h1><p id="or"></p><button class="tiny" id="b-rep">After-action report</button></div>
+<script>
+const cv = document.getElementById('map');
+const ctx = cv.getContext('2d');
+let W=0,H=0, state=null, cat=null, lang='en';
+let cam={x:48,y:48,z:1}, drag=null, wall=null, build=null, heat=false, paused=false, speed=1;
+let keys={}, recruit=null, strike=false, veh=null, selSquad=-1;
+const TILE=14;
+function L(k, fb){ const e=cat&&cat.loc&&cat.loc[k]; return (e&&e[lang])||fb||k; }
+function resize(){ W=cv.width=innerWidth; H=cv.height=innerHeight; }
+addEventListener('resize', resize); resize();
+
+async function api(path, body){
+  const opt = body===undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)};
+  const r = await fetch(path, opt);
+  return r.json();
+}
+function t2s(x,y){ return {x:(x-cam.x)*TILE*cam.z + W/2, y:(y-cam.y)*TILE*cam.z + H/2}; }
+function s2t(x,y){ return {x:(x-W/2)/(TILE*cam.z)+cam.x, y:(y-H/2)/(TILE*cam.z)+cam.y}; }
+
+function draw(){
+  ctx.fillStyle = state && state.night ? '#070b14' : '#101820';
+  ctx.fillRect(0,0,W,H);
+  if(!state) return;
+  const z=cam.z*TILE;
+  // grid / roads
+  ctx.strokeStyle='#1a2430'; ctx.lineWidth=1;
+  for(let x=0;x<=state.mapW;x+=8){
+    const a=t2s(x,0), b=t2s(x,state.mapH); ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  for(let y=0;y<=state.mapH;y+=8){
+    const a=t2s(0,y), b=t2s(state.mapW,y); ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  if(heat){
+    for(const c of state.citizens||[]){
+      if(!c.i) continue;
+      const p=t2s(c.x,c.y);
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,z*4);
+      g.addColorStop(0,'rgba(210,50,40,.35)'); g.addColorStop(1,'rgba(210,50,40,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,z*4,0,6.28); ctx.fill();
+    }
+  }
+  for(const b of state.buildings||[]){
+    const p=t2s(b.x,b.y);
+    ctx.globalAlpha = b.built?1:.45;
+    ctx.fillStyle = b.fn==='power'||b.def==='power_plant'||b.def==='generator'||b.def==='solar_panel'? '#d4a017'
+      : b.def==='medical_center'? '#c45c5c'
+      : b.def==='farm'? '#3d8f4a'
+      : b.def.indexOf('water')>=0? '#3a7fc4'
+      : b.fn==='military'||b.def==='barracks'? '#6b5b3a'
+      : '#4a5564';
+    ctx.fillRect(p.x, p.y, b.w*z, b.h*z);
+    ctx.strokeStyle = b.powered? '#e8a838' : '#000';
+    ctx.lineWidth=1; ctx.strokeRect(p.x,p.y,b.w*z,b.h*z);
+    ctx.globalAlpha=1;
+  }
+  ctx.lineWidth=Math.max(2, z*0.22);
+  for(const w of state.walls||[]){
+    const a=t2s(w.x1+.5,w.y1+.5), b=t2s(w.x2+.5,w.y2+.5);
+    ctx.strokeStyle = w.gate? '#c9a227' : w.corner? '#d0d6de' : '#8a96a8';
+    ctx.globalAlpha = w.built? .95 : .4;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  for(const c of state.citizens||[]){
+    const p=t2s(c.x,c.y);
+    ctx.fillStyle = c.s===3? '#555' : c.i? '#e05a4f' : c.s===2? '#e0b34a' : '#5ee0a0';
+    ctx.fillRect(p.x-1.5,p.y-1.5,3,3);
+  }
+  for(const zom of state.zombies||[]){
+    const p=t2s(zom.x,zom.y);
+    ctx.fillStyle = zom.t==='tank'||zom.t==='mutant'? '#7a3cff' : zom.t==='runner'? '#ff5a7a' : '#9b6bff';
+    const s = (zom.t==='tank'||zom.t==='mutant')?5:3;
+    ctx.beginPath(); ctx.arc(p.x,p.y,s,0,6.28); ctx.fill();
+  }
+  for(const v of state.vehicles||[]){
+    const p=t2s(v.x,v.y);
+    ctx.fillStyle='#c9a227';
+    ctx.fillRect(p.x-4,p.y-3,8,6);
+  }
+  for(const q of state.squads||[]){
+    const p=t2s(q.x,q.y);
+    ctx.fillStyle = q.id===selSquad ? '#ffe08a' : '#6ec1ff';
+    ctx.beginPath(); ctx.moveTo(p.x,p.y-5); ctx.lineTo(p.x+5,p.y+4); ctx.lineTo(p.x-5,p.y+4); ctx.closePath(); ctx.fill();
+  }
+  if(wall){
+    const a=t2s(wall.x+.5,wall.y+.5), b=t2s(wall.x2+.5,wall.y2+.5);
+    ctx.strokeStyle='#e8a838'; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+
+function money(n){ return Math.floor(n).toLocaleString(); }
+function hud(){
+  if(!state) return;
+  const r=state.resources, s=state.stats;
+  document.getElementById('res').innerHTML =
+    `<span>${L('hud.money','$')} <b>${money(r.money)}</b></span>
+     <span>${L('hud.food','Food')} <b>${money(r.food)}</b></span>
+     <span>${L('hud.water','Water')} <b>${money(r.water)}</b></span>
+     <span>${L('hud.materials','Mats')} <b>${money(r.materials)}</b></span>
+     <span>${L('hud.medicine','Med')} <b>${money(r.medicine)}</b></span>
+     <span>${L('hud.ammo','Ammo')} <b>${money(r.ammo)}</b></span>
+     <span>${L('hud.research','Res')} <b>${money(r.research)}</b></span>
+     <span>${L('hud.power','MW')} <b>${money(r.powerGen)}/${money(r.powerUse)}</b></span>
+     <span>${L('hud.population','Pop')} <b>${s.alive}</b></span>
+     <span>${L('hud.infected','Inf')} <b style="color:#e05a4f">${s.infected}</b></span>
+     <span>${L('hud.zombies','Z')} <b style="color:#b48cff">${s.zombies}</b></span>
+     <span>${L('hud.morale','Morale')} <b>${s.morale.toFixed(0)}</b></span>`;
+  document.getElementById('clock').textContent = `${L('hud.day','Day')} ${state.day.toFixed(1)} · ${state.night?L('hud.night','Night'):'Day'} · ${L('hud.season','Season')} ${state.season}`;
+  document.getElementById('weather').textContent = state.weather;
+  document.getElementById('objs').innerHTML = (state.objectives||[]).map(o=>{
+    const pct = Math.min(100, 100*o.progress/Math.max(1,o.target));
+    const done = o.state===2;
+    return `<div class="obj" style="opacity:${o.state===0?.45:1}"><div>${done?'✓ ':''}${o.title} <small>${o.progress}/${o.target}</small></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join('') || '<small>—</small>';
+  document.getElementById('evs').innerHTML = (state.events||[]).slice().reverse().map(e=>`<div class="ev">${e.m}</div>`).join('');
+  const h=state.hints&&state.hints[0];
+  const box=document.getElementById('hint');
+  if(h){ box.style.display='block'; document.getElementById('ht').textContent=h.title; document.getElementById('hb').textContent=h.body; }
+  else box.style.display='none';
+  ['p-curfew','p-qua','p-mar'].forEach((id,i)=>{
+    const on=[state.policies.curfew,state.policies.quarantine,state.policies.martial][i];
+    document.getElementById(id).classList.toggle('active', !!on);
+  });
+  if(state.result!==0){
+    document.getElementById('over').style.display='flex';
+    document.getElementById('ot').textContent = state.result===1? L('result.won','Victory') : L('result.lost','Defeat');
+    document.getElementById('or').textContent = state.reason;
+  } else document.getElementById('over').style.display='none';
+  document.documentElement.dir = (lang==='fa'||lang==='ar')?'rtl':'ltr';
+}
+
+function fillMenus(){
+  if(!cat) return;
+  document.getElementById('builds').innerHTML =
+    `<button data-wall="1">${L('ui.build','Build')} wall</button>` +
+    cat.buildings.map(b=>`<button data-b="${b.id}">${b.name} <small>$${b.money} · M${b.mats}</small></button>`).join('');
+  document.getElementById('mils').innerHTML = cat.soldiers.map(s=>`<button data-s="${s.id}">${s.name} <small>$${s.money} ammo ${s.ammo}</small></button>`).join('');
+  document.getElementById('vehs').innerHTML = (cat.vehicles||[]).map(v=>`<button data-v="${v.id}">${v.name} <small>$${v.money} fuel ${v.fuel}</small></button>`).join('');
+  document.getElementById('recs').innerHTML = (cat.recipes||[]).map(r=>`<button data-r="${r.id}">${r.name}</button>`).join('');
+  document.getElementById('techs').innerHTML = cat.techs.map(t=>`<button data-t="${t.id}">${t.name} <small>${t.cost} ${t.branch}</small></button>`).join('');
+}
+
+cv.addEventListener('mousedown', e=>{
+  const t=s2t(e.offsetX,e.offsetY); const tx=Math.floor(t.x), ty=Math.floor(t.y);
+  if(e.button===1 || e.shiftKey){ drag={x:e.offsetX,y:e.offsetY,cx:cam.x,cy:cam.y}; return; }
+  if(build==='wall'){ wall={x:tx,y:ty,x2:tx,y2:ty}; return; }
+  if(build){ api('/api/cmd',{verb:'PlaceBuilding',args:[build,tx,ty]}).then(()=>{}); return; }
+  if(recruit){ api('/api/cmd',{verb:'RecruitSquad',args:[recruit,tx,ty]}).then(()=>{}); recruit=null; return; }
+  if(veh){ api('/api/cmd',{verb:'DeployVehicle',args:[veh,tx,ty]}).then(()=>{}); veh=null; return; }
+  if(strike){ api('/api/cmd',{verb:'CallAirstrike',args:[tx,ty]}).then(()=>{}); strike=false; return; }
+  if(selSquad>=0){ api('/api/cmd',{verb:'IssueOrder',args:[selSquad,2,tx,ty]}); selSquad=-1; return; }
+  const hit=(state.squads||[]).find(q=>Math.abs(q.x-t.x)<1.2 && Math.abs(q.y-t.y)<1.2);
+  if(hit){ selSquad=hit.id; document.getElementById('status').textContent='Squad '+hit.name+' — click map to attack'; }
+});
+cv.addEventListener('mousemove', e=>{
+  if(drag){ cam.x = drag.cx - (e.offsetX-drag.x)/(TILE*cam.z); cam.y = drag.cy - (e.offsetY-drag.y)/(TILE*cam.z); }
+  if(wall){ const t=s2t(e.offsetX,e.offsetY); wall.x2=Math.floor(t.x); wall.y2=Math.floor(t.y); }
+  const m=12;
+  if(e.clientX<m) cam.x -= 0.4/cam.z; if(e.clientX>innerWidth-m) cam.x += 0.4/cam.z;
+  if(e.clientY<m) cam.y -= 0.4/cam.z; if(e.clientY>innerHeight-m) cam.y += 0.4/cam.z;
+});
+cv.addEventListener('mouseup', e=>{
+  if(wall){ api('/api/cmd',{verb:'BuildWallLine',args:[wall.x,wall.y,wall.x2,wall.y2]}); wall=null; }
+  drag=null;
+});
+cv.addEventListener('wheel', e=>{ cam.z = Math.max(.35, Math.min(3.2, cam.z * (e.deltaY>0? .9:1.1))); e.preventDefault(); }, {passive:false});
+addEventListener('keydown', e=> keys[e.key.toLowerCase()]=true);
+addEventListener('keyup', e=> keys[e.key.toLowerCase()]=false);
+
+document.getElementById('left').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.wall){ build = build==='wall'? null : 'wall'; b.classList.toggle('active'); return; }
+  if(b.dataset.b){ build = build===b.dataset.b? null : b.dataset.b; document.querySelectorAll('#builds button').forEach(x=>x.classList.remove('active')); if(build) b.classList.add('active'); return; }
+  if(b.dataset.s){ recruit=b.dataset.s; veh=null; build=null; strike=false; document.getElementById('status').textContent='Click map to deploy '+recruit; return; }
+  if(b.dataset.v){ veh=b.dataset.v; recruit=null; build=null; strike=false; document.getElementById('status').textContent='Click map to deploy '+veh; return; }
+  if(b.dataset.r){ api('/api/cmd',{verb:'QueueRecipe',args:[b.dataset.r]}); return; }
+});
+document.getElementById('b-strike').onclick=()=>{ strike=!strike; recruit=null; veh=null; build=null; document.getElementById('status').textContent=strike?'Click map to call airstrike':''; document.getElementById('b-strike').classList.toggle('active', strike); };
+document.getElementById('techs').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(b&&b.dataset.t) api('/api/cmd',{verb:'StartResearch',args:[b.dataset.t]});
+});
+document.getElementById('p-curfew').onclick=()=>api('/api/cmd',{verb:'SetPolicy',args:[0, state.policies.curfew?0:1]});
+document.getElementById('p-qua').onclick=()=>api('/api/cmd',{verb:'SetPolicy',args:[1, state.policies.quarantine?0:1]});
+document.getElementById('p-mar').onclick=()=>api('/api/cmd',{verb:'SetPolicy',args:[2, state.policies.martial?0:1]});
+document.getElementById('b-aid').onclick=()=>api('/api/cmd',{verb:'RequestAid',args:[]});
+document.getElementById('b-trade').onclick=()=>api('/api/cmd',{verb:'SendTradeCaravan',args:[]});
+document.getElementById('b-evac').onclick=()=>api('/api/cmd',{verb:'CallEvacuationFlight',args:[]});
+document.getElementById('b-pause').onclick=()=>{ paused=!paused; document.getElementById('b-pause').textContent=paused?'Resume':'Pause'; };
+document.querySelectorAll('[data-sp]').forEach(b=> b.onclick=()=> speed=+b.dataset.sp);
+document.getElementById('b-heat').onclick=()=> heat=!heat;
+document.getElementById('b-save').onclick=()=> api('/api/save',{}).then(()=> document.getElementById('status').textContent='Saved.');
+document.getElementById('b-load').onclick=()=> api('/api/load',{}).then(s=>{ if(s.day!==undefined) state=s; });
+document.getElementById('b-new').onclick=()=> api('/api/new',{campaign:'tutorial',scenario:'tutorial',difficulty:'story',seed:Date.now()%100000,lang}).then(s=> state=s);
+document.getElementById('lang').onchange=e=>{ lang=e.target.value; api('/api/new',{campaign:'tutorial',scenario:'tutorial',difficulty:'story',lang}).then(s=> state=s); };
+document.getElementById('hint').onclick=()=> api('/api/cmd',{verb:'DismissHint',args:[]});
+document.getElementById('b-rep').onclick=()=> fetch('/api/report').then(r=>r.text()).then(t=> alert(t.slice(0,1500)));
+
+async function loop(){
+  if(keys['w']||keys['arrowup']) cam.y -= 0.6/cam.z;
+  if(keys['s']||keys['arrowdown']) cam.y += 0.6/cam.z;
+  if(keys['a']||keys['arrowleft']) cam.x -= 0.6/cam.z;
+  if(keys['d']||keys['arrowright']) cam.x += 0.6/cam.z;
+  try{
+    if(!paused) state = await api('/api/tick', {dt: 0.25*speed});
+    else state = await api('/api/state');
+    hud();
+  }catch(e){}
+  draw();
+  setTimeout(loop, 250);
+}
+(async()=>{
+  cat = await api('/api/catalog');
+  fillMenus();
+  state = await api('/api/state');
+  hud(); loop();
+})();
+</script>
+</body>
+</html>

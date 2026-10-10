@@ -1,0 +1,6 @@
+Id,Name,AllowedVerbs,Description
+commander,Commander,*,"Issues every command; the default single-player role"
+engineer,Engineer,PlaceBuilding;BuildWallLine;DemolishBuilding;BuildPowerLine;BuildWaterPipe;DemolishPowerLine;DemolishWaterPipe;QueueRecipe;UpgradeBuilding;BuildWallGate,"Builds, repairs, crafts, and maintains the grid"
+medic,Medic,SetPolicy;StartResearch;QueueRecipe;DesignateQuarantineZone,"Policies, research, medical crafting, quarantine zones"
+logistics,Logistics,RequestAid;SendTradeCaravan;CallEvacuationFlight;QueueRecipe,"Aid, trade, evacuation, and supply crafting"
+virus,Virus,VirusSpawnHorde;VirusInfectTile;VirusContaminate;VirusBoostHorde;VirusMutate,"Versus-mode virus player"

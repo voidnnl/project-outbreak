@@ -3,6 +3,10 @@
 #include "HAL/PlatformFileManager.h"
 #include "Misc/Paths.h"
 
+FString UOCGameInstance::SlotPath(const FString& SlotName) const {
+    return FPaths::ProjectSavedDir() / TEXT("SaveGames") / SlotName;
+}
+
 void UOCGameInstance::RefreshSaveSlots() {
     SaveSlots.Reset();
     const FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames");

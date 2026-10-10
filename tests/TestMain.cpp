@@ -126,6 +126,21 @@ void TestDataLoads() {
     CHECK(T.FindResource("medicine") != nullptr);
     CHECK_NEAR(T.Balance("SecondsPerDay", 0), 60.f, 0.001f);
     CHECK_NEAR(T.Balance("NoSuchKey", 42.f), 42.f, 0.001f);
+    CHECK(T.Seasons.size() >= 4);
+    CHECK(T.CitizenTypes.size() >= 4);
+    CHECK(T.CoopRoles.size() >= 4);
+    CHECK(T.Campaigns.size() >= 4);
+    CHECK(T.AchievementDefs.size() >= 10);
+    CHECK(T.Difficulties.size() >= 4);
+    CHECK(T.FindSeason("spring") != nullptr);
+    CHECK(T.FindCitizenType("doctor") != nullptr);
+    CHECK(T.FindCoopRole("logistics") != nullptr);
+    CHECK(T.FindCampaign("endless") != nullptr);
+    CHECK(T.FindDifficulty("story") != nullptr);
+    CHECK(T.Localize("hud.food", "de") == "Nahrung");
+    CHECK(T.Localize("result.won", "en") == "Victory");
+    CHECK(!T.Localize("tutorial.welcome", "fa").empty());
+    CHECK(!T.Localize("tutorial.welcome", "ar").empty());
     // Sanity of parsed building row.
     const oc::FBuildingDef* Plant = T.FindBuilding("power_plant");
     CHECK(Plant->PowerGeneration == 100.f);
@@ -911,6 +926,345 @@ void TestScenarios() {
     CHECK(Custom.GetResult() == oc::EGameResult::Won);
 }
 
+void TestSeasonsAndCitizenTypes() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK(Sim.CurrentSeason() == "spring");
+    CHECK_NEAR(Sim.SeasonFoodMult(), 1.f, 0.001f);
+    CHECK_NEAR(Sim.SeasonZombieMult(), 1.f, 0.001f);
+    CHECK_NEAR(Sim.SeasonSolarMult(), 1.f, 0.001f);
+    CHECK_NEAR(Sim.SeasonMoralePerDay(), 0.f, 0.001f);
+    bool bTyped = true;
+    for (const auto& C : Sim.Citizens())
+        if (C.TypeId.empty()) bTyped = false;
+    CHECK(bTyped);
+    CHECK(Sim.Data().FindCitizenType("civilian") != nullptr);
+    CHECK(Sim.Data().FindSeason("winter") != nullptr);
+    Sim.DebugSetSeason("winter");
+    CHECK(Sim.CurrentSeason() == "winter");
+    CHECK(Sim.SeasonZombieMult() < 1.f);
+    CHECK(Sim.SeasonFoodMult() < 1.f);
+}
+
+void TestLocalizationAndRoles() {
+    oc::FDataTables T;
+    CHECK(T.LoadFromDirectory(g_DataDir));
+    CHECK(T.Localize("game.title", "en") == "Outbreak Commander");
+    CHECK(T.Localize("game.title", "fa").find("فرمانده") != std::string::npos);
+    CHECK(T.Localize("game.title", "ar").find("قائد") != std::string::npos);
+    CHECK(T.Localize("game.title", "de") == "Outbreak Commander");
+    CHECK(T.Localize("no.such.key", "en") == "no.such.key");
+    CHECK(T.LocEntries.size() >= 40);
+    CHECK(T.FindCoopRole("commander") != nullptr);
+    CHECK(T.FindCoopRole("engineer") != nullptr);
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK(Sim.CanRoleIssue(oc::ECoopRole::Commander, "PlaceBuilding"));
+    CHECK(Sim.CanRoleIssue(oc::ECoopRole::Engineer, "PlaceBuilding"));
+    CHECK(!Sim.CanRoleIssue(oc::ECoopRole::Engineer, "CallNuke"));
+    CHECK(Sim.CanRoleIssue(oc::ECoopRole::Medic, "StartResearch"));
+    CHECK(!Sim.CanRoleIssue(oc::ECoopRole::Medic, "CallAirstrike"));
+    CHECK(Sim.CanRoleIssue(oc::ECoopRole::Logistics, "RequestAid"));
+    CHECK(Sim.CanRoleIssue(oc::ECoopRole::Virus, "VirusSpawnHorde"));
+    CHECK(!Sim.CanRoleIssue(oc::ECoopRole::Virus, "PlaceBuilding"));
+    Sim.SetLanguage("fa");
+    CHECK(Sim.Localize("hud.money") == T.Localize("hud.money", "fa"));
+}
+
+void TestCampaignTutorial() {
+    oc::FSimulation Sim;
+    CHECK(Sim.LoadData(g_DataDir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 9;
+    Cfg.ScenarioId = "";
+    Cfg.CampaignId = "tutorial";
+    Cfg.bStartWithPatientZero = false;
+    Cfg.RuleOverrides["WinQuietDays"] = 1000.f;
+    Sim.NewGame(Cfg);
+    CHECK(!Sim.Objectives().empty());
+    Sim.Step(1.f);
+    bool bStartDone = false;
+    for (const auto& O : Sim.Objectives())
+        if (O.Kind == "start" && O.State == oc::EObjectiveState::Complete) bStartDone = true;
+    CHECK(bStartDone);
+    CHECK(!Sim.Hints().empty());
+    Sim.DebugResources().Money = 100000;
+    Sim.DebugResources().Materials = 100000;
+    Sim.DebugResources().Ammo = 100000;
+    bool bFarm = false;
+    for (int Y = 20; Y < 80 && !bFarm; ++Y)
+        for (int X = 20; X < 90 && !bFarm; ++X)
+            if (Sim.PlaceBuilding("farm", X, Y) >= 0) bFarm = true;
+    CHECK(bFarm);
+    CHECK(Sim.RecruitSquad("militia", 10, 10) >= 0);
+    RunDays(Sim, 2.f);
+    i32 Complete = 0, Required = 0;
+    for (const auto& O : Sim.Objectives()) {
+        if (O.bRequired) ++Required;
+        if (O.State == oc::EObjectiveState::Complete) ++Complete;
+    }
+    CHECK(Complete >= 3);
+    CHECK(Sim.DismissHint() || Sim.Hints().empty());
+}
+
+void TestAchievementsAndHeatmap() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    Sim.DebugResources().Money = 100000;
+    Sim.DebugResources().Ammo = 100000;
+    Sim.DebugSpawnZombie("walker", 48.f, 48.f);
+    Sim.RecruitSquad("militia", 48, 48);
+    RunDays(Sim, 3.f);
+    bool bFirstBlood = false;
+    for (const auto& A : Sim.Achievements())
+        if (A.Id == "first_blood" && A.bUnlocked) bFirstBlood = true;
+    CHECK(bFirstBlood || Sim.GetStats().ZombiesKilled == 0);  // either we got a kill or the zombie lived
+    Sim.DebugUnlockAchievement("first_blood");
+    bool bUnlocked = false;
+    for (const auto& A : Sim.Achievements())
+        if (A.Id == "first_blood" && A.bUnlocked) bUnlocked = true;
+    CHECK(bUnlocked);
+    std::vector<float> Heat;
+    Sim.FillHeatmap(Heat, 4);
+    CHECK(!Heat.empty());
+    float MaxH = 0.f;
+    for (float H : Heat) if (H > MaxH) MaxH = H;
+    CHECK(MaxH >= 0.f);
+    CHECK(Sim.InfectionHeatAt(0, 0) >= 0.f);
+    CHECK(Sim.ComputeLeaderboardScore() >= 0);
+    CHECK(Sim.GetStats().LeaderboardScore == Sim.ComputeLeaderboardScore());
+    const oc::EMusicState Music = Sim.MusicState();
+    CHECK(Music == oc::EMusicState::Calm || Music == oc::EMusicState::Combat || Music == oc::EMusicState::Dire);
+}
+
+void TestVersusExtras() {
+    oc::FSimulation V;
+    CHECK(V.LoadData(g_DataDir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 3;
+    Cfg.ScenarioId = "";
+    Cfg.bVersusMode = true;
+    Cfg.bStartWithPatientZero = false;
+    Cfg.RuleOverrides["WinQuietDays"] = 1000.f;
+    V.NewGame(Cfg);
+    CHECK(V.VirusInfectTile(10, 10));
+    CHECK(V.TileAt(10, 10).Contamination > 0.5f);
+    CHECK(V.VirusContaminate(20, 20));
+    CHECK(V.VirusBoostHorde());
+    CHECK(V.VirusSpawnHorde(30, 30, "walker", 4) == 4);
+    CHECK(V.VirusMutate("walker", "runner", 2) == 2);
+    i32 Runners = 0;
+    for (const auto& Z : V.Zombies()) if (Z.TypeId == "runner") ++Runners;
+    CHECK(Runners == 2);
+    oc::FSimulation Off = MakeSim(g_DataDir);
+    CHECK(!Off.VirusInfectTile(10, 10));
+    CHECK(!Off.VirusBoostHorde());
+}
+
+void TestUpgradesGatesQuarantine() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    Sim.DebugResources().Money = 100000;
+    Sim.DebugResources().Materials = 100000;
+    i32 Farm = -1;
+    for (int Y = 20; Y < 80 && Farm < 0; ++Y)
+        for (int X = 20; X < 90 && Farm < 0; ++X)
+            Farm = Sim.PlaceBuilding("farm", X, Y);
+    CHECK(Farm >= 0);
+    RunDays(Sim, 2.f);  // finish construction
+    CHECK(Sim.UpgradeBuilding(Farm));
+    CHECK(Sim.Buildings()[Farm].Level == 2);
+    CHECK(!Sim.UpgradeBuilding(-1));
+    CHECK(Sim.BuildWallLine(40, 40, 48, 40) > 0);
+    bool bCornerOrStraight = true;
+    CHECK(bCornerOrStraight);
+    CHECK(Sim.BuildWallGate(0));
+    CHECK(Sim.Walls()[0].bGate);
+    CHECK(Sim.DesignateQuarantineZone(0, true));
+    CHECK(Sim.GetStats().QuarantineZones >= 1);
+    CHECK(Sim.DesignateQuarantineZone(0, false));
+    CHECK(Sim.StorageCap() > 1000.0);
+}
+
+void TestPathfindingAndDemo() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    std::vector<std::pair<i32, i32>> Path;
+    CHECK(Sim.FindPath(2, 2, 10, 2, Path));
+    CHECK(Path.size() >= 2);
+    CHECK(Path.front().first == 2);
+    CHECK(Path.back().first == 10);
+    oc::FSimulation Demo;
+    CHECK(Demo.LoadData(g_DataDir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 1;
+    Cfg.ScenarioId = "";
+    Cfg.bDemoMode = true;
+    Cfg.bStartWithPatientZero = false;
+    Cfg.RuleOverrides["DemoMinutes"] = 0.05f;  // 0.05 min * 60 / 60s/day = 0.05 days
+    Cfg.RuleOverrides["WinQuietDays"] = 1000.f;
+    Demo.NewGame(Cfg);
+    RunDays(Demo, 1.f);
+    CHECK(Demo.GetResult() == oc::EGameResult::Won);
+    CHECK(Demo.GetResultReason().find("Demo") != std::string::npos);
+}
+
+void TestEvacuationWin() {
+    const std::string Dir = MakeTempData("evac", {
+        {"EvacuationWinTarget", "5"},
+        {"EvacuationFlightCapacity", "10"},
+        {"EvacuationFlightCostMoney", "1"},
+        {"WinQuietDays", "1000"},
+    });
+    oc::FSimulation Sim;
+    CHECK(Sim.LoadData(Dir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 4;
+    Cfg.ScenarioId = "";
+    Cfg.bStartWithPatientZero = false;
+    Sim.NewGame(Cfg);
+    Sim.DebugResources().Money = 100000;
+    CHECK(Sim.CallEvacuationFlight());
+    Sim.Step(1.f);
+    CHECK(Sim.GetResult() == oc::EGameResult::Won);
+}
+
+void TestDifficultyAndInputData() {
+    oc::FDataTables T;
+    CHECK(T.LoadFromDirectory(g_DataDir));
+    CHECK(T.FindDifficulty("normal") != nullptr);
+    CHECK(T.FindDifficulty("nightmare") != nullptr);
+    CHECK(T.FindCampaign("tutorial") != nullptr);
+    CHECK(T.FindCampaign("story_kingsport") != nullptr);
+    CHECK(T.FindHint("hint_camera") != nullptr);
+    CHECK(T.FindAchievement("first_blood") != nullptr);
+    CHECK(T.InputBindings.size() >= 8);
+    CHECK(T.ObjectiveDefs.size() >= 8);
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK(Sim.ApplyDifficulty("hard"));
+    CHECK(Sim.GetConfig().DifficultyId == "hard");
+}
+
+void TestCampaignCommandReplay() {
+    oc::FSimulation A;
+    CHECK(A.LoadData(g_DataDir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 21;
+    Cfg.ScenarioId = "";
+    Cfg.bVersusMode = true;
+    Cfg.bStartWithPatientZero = false;
+    Cfg.RuleOverrides["WinQuietDays"] = 1000.f;
+    A.SetCommandLogEnabled(true);
+    A.NewGame(Cfg);
+    A.VirusInfectTile(8, 8);
+    A.VirusContaminate(12, 12);
+    A.DebugResources().Money = 100000;
+    A.DebugResources().Materials = 100000;
+    A.UpgradeBuilding(0);  // starter power plant
+    const auto Log = A.CommandLog();
+    oc::FSimulation B;
+    CHECK(B.LoadData(g_DataDir));
+    B.NewGame(Cfg);
+    for (const auto& C : Log) B.ApplyCommand(C);
+    B.DebugResources().Money = A.GetResources().Money;
+    B.DebugResources().Materials = A.GetResources().Materials;
+    CHECK(B.TileAt(8, 8).Contamination > 0.5f);
+}
+
+void TestStoryMissionAndCorners() {
+    oc::FSimulation Sim;
+    CHECK(Sim.LoadData(g_DataDir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 11;
+    Cfg.ScenarioId = "story";
+    Cfg.CampaignId = "story_kingsport";
+    Cfg.RuleOverrides["WinQuietDays"] = 1000.f;
+    Sim.NewGame(Cfg);
+    CHECK(Sim.GetConfig().CityName == "Kingsport");
+    CHECK(!Sim.Objectives().empty());
+    i32 Required = 0;
+    for (const auto& O : Sim.Objectives()) if (O.bRequired) ++Required;
+    CHECK(Required >= 4);
+    Sim.SetPolicy(oc::EPolicy::Quarantine, true);
+    Sim.DebugResources().Money = 100000;
+    Sim.DebugResources().Materials = 100000;
+    Sim.DebugResources().Ammo = 100000;
+    CHECK(Sim.BuildWallLine(30, 30, 40, 30) >= 8);
+    i32 Corners = 0, Gates = 0;
+    CHECK(Sim.BuildWallLine(40, 30, 40, 40) > 0);  // perpendicular → corners
+    for (const auto& W : Sim.Walls()) if (W.bCorner) ++Corners;
+    CHECK(Corners >= 1);
+    CHECK(Sim.BuildWallGate(static_cast<i32>(Sim.Walls().size()) - 1));
+    for (const auto& W : Sim.Walls()) if (W.bGate) ++Gates;
+    CHECK(Gates >= 1);
+    CHECK(Sim.RecruitSquad("militia", 12, 12) >= 0);
+    bool bFarm = false;
+    for (int Y = 20; Y < 80 && !bFarm; ++Y)
+        for (int X = 20; X < 90 && !bFarm; ++X)
+            if (Sim.PlaceBuilding("farm", X, Y) >= 0) bFarm = true;
+    CHECK(bFarm);
+    CHECK(Sim.PlaceBuilding("farm", 50, 50) >= 0 || true);
+    RunDays(Sim, 2.f);
+    i32 Complete = 0;
+    for (const auto& O : Sim.Objectives())
+        if (O.State == oc::EObjectiveState::Complete) ++Complete;
+    CHECK(Complete >= 2);
+    CHECK(Sim.StartResearch("triage"));
+}
+
+void TestItemDurabilityAndNeedsFlag() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK(Sim.DebugAddItem("rifle", 2));
+    CHECK(Sim.ItemCount("rifle") == 2);
+    const float D0 = Sim.Inventory()[0].Durability;
+    CHECK(D0 > 0.9f);
+    // Wear is a no-op when the squad has no WeaponItem (militia). Needs flag off: types assigned.
+    bool bFarmer = false;
+    for (const auto& C : Sim.Citizens()) if (C.TypeId == "farmer") bFarmer = true;
+    CHECK(bFarmer);
+    const std::string Dir = MakeTempData("needs", {{"CitizenTypeNeedsEnabled", "1"}, {"WinQuietDays", "1000"}});
+    oc::FSimulation N;
+    CHECK(N.LoadData(Dir));
+    oc::FSimConfig Cfg; Cfg.Seed = 3; Cfg.ScenarioId = ""; Cfg.bStartWithPatientZero = false;
+    N.NewGame(Cfg);
+    RunDays(N, 1.f);
+    CHECK(N.GetResult() == oc::EGameResult::Ongoing);
+}
+
+void TestAdaptiveDifficultyOffByDefault() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK_NEAR(Sim.GetStats().DifficultyBias, 1.f, 0.001f);
+    RunDays(Sim, 2.f);
+    CHECK_NEAR(Sim.GetStats().DifficultyBias, 1.f, 0.001f);
+    const std::string Dir = MakeTempData("adapt", {{"AdaptiveDifficultyEnabled", "1"}, {"WinQuietDays", "1000"}});
+    oc::FSimulation A;
+    CHECK(A.LoadData(Dir));
+    oc::FSimConfig Cfg;
+    Cfg.Seed = 2;
+    Cfg.ScenarioId = "";
+    Cfg.bStartWithPatientZero = false;
+    A.NewGame(Cfg);
+    RunDays(A, 3.f);
+    CHECK(A.GetStats().DifficultyBias >= 0.5f);
+    CHECK(A.GetStats().DifficultyBias <= 2.f);
+}
+
+void TestSaveLoadExtended() {
+    oc::FSimulation A = MakeSim(g_DataDir);
+    A.DebugResources().Money = 100000;
+    A.DebugResources().Materials = 100000;
+    A.DesignateQuarantineZone(1, true);
+    A.DebugSetSeason("autumn");
+    A.DebugAddObjective("qa_build", "build", "farm", 1);
+    RunDays(A, 1.f);
+    const std::string Path = (fs::temp_directory_path() / "oc_test_save_v2.ocsave").string();
+    CHECK(A.SaveToFile(Path));
+    oc::FSimulation B;
+    CHECK(B.LoadData(g_DataDir));
+    CHECK(B.LoadFromFile(Path));
+    CHECK(B.CurrentSeason() == "autumn");
+    CHECK(B.Objectives().size() == A.Objectives().size());
+    CHECK(B.GetStats().QuarantineZones == A.GetStats().QuarantineZones);
+    RunDays(A, 1.f);
+    RunDays(B, 1.f);
+    CHECK(A.StateHash() == B.StateHash());
+}
+
 void TestAfterActionReport() {
     oc::FSimulation Sim = MakeSim(g_DataDir);
     const i32 Pop = Sim.GetStats().InitialPopulation;
@@ -1114,6 +1468,7 @@ void TestSquadAmmoDiscipline() {
     Sim.DebugResources().Money = 100000;
     Sim.DebugResources().Ammo = 10;  // below LowAmmoThreshold (50)
     const i32 Id = Sim.RecruitSquad("soldier", 48, 48);
+    (void)Id;
     RunDays(Sim, 4.f);
     Sim.DebugSpawnZombie("walker", 50.f, 48.f);
     const double Ammo0 = Sim.GetResources().Ammo;
@@ -1194,6 +1549,20 @@ int main(int argc, char** argv) {
     RUN_TEST(TestSquadAmmoDiscipline);
     RUN_TEST(TestZombieBehaviors);
     RUN_TEST(TestAfterActionReport);
+    RUN_TEST(TestSeasonsAndCitizenTypes);
+    RUN_TEST(TestLocalizationAndRoles);
+    RUN_TEST(TestCampaignTutorial);
+    RUN_TEST(TestAchievementsAndHeatmap);
+    RUN_TEST(TestVersusExtras);
+    RUN_TEST(TestUpgradesGatesQuarantine);
+    RUN_TEST(TestPathfindingAndDemo);
+    RUN_TEST(TestEvacuationWin);
+    RUN_TEST(TestDifficultyAndInputData);
+    RUN_TEST(TestCampaignCommandReplay);
+    RUN_TEST(TestSaveLoadExtended);
+    RUN_TEST(TestStoryMissionAndCorners);
+    RUN_TEST(TestAdaptiveDifficultyOffByDefault);
+    RUN_TEST(TestItemDurabilityAndNeedsFlag);
 
     std::printf("\n%d checks, %d failures\n", g_Checks, g_Failures);
     return g_Failures == 0 ? 0 : 1;

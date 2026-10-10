@@ -83,6 +83,9 @@ bool FSimulation::SaveToFile(const std::string& Path) const {
     W.I32(Config.MapWidth); W.I32(Config.MapHeight); W.I32(Config.InitialPopulation);
     W.Bool(Config.bStartWithPatientZero); W.Bool(Config.bVersusMode);
     W.Str(Config.ScenarioId); W.Str(Config.CityName);
+    W.Str(Config.CampaignId); W.Str(Config.Language); W.Str(Config.DifficultyId);
+    W.U8(static_cast<std::uint8_t>(Config.LocalRole)); W.I32(Config.MaxPlayers);
+    W.Bool(Config.bTutorial); W.Bool(Config.bDemoMode); W.Bool(Config.bCountryside);
     W.U64(Config.RuleOverrides.size());
     for (const auto& O : Config.RuleOverrides) { W.Str(O.first); W.F32(O.second); }
 
@@ -138,6 +141,7 @@ bool FSimulation::SaveToFile(const std::string& Path) const {
         W.F32(C.InfectionSecondsLeft); W.F32(C.Panic); W.F32(C.Hunger); W.F32(C.Thirst);
         W.F32(C.Health); W.F32(C.CorpseRiseSecondsLeft);
         W.F32(C.TargetX); W.F32(C.TargetY); W.Bool(C.bHasTarget);
+        W.Str(C.TypeId);
     }
 
     // Zombies.
@@ -164,6 +168,7 @@ bool FSimulation::SaveToFile(const std::string& Path) const {
         W.F32(S.TrainSecondsLeft); W.F32(S.TargetX); W.F32(S.TargetY);
         W.F32(S.Hp); W.F32(S.PerSoldierHp);
         W.I32(S.Kills); W.F32(S.NoiseTimer); W.Bool(S.bWiped);
+        W.Bool(S.bAutoRetreat); W.I32(S.CoverBuildingId);
     }
 
     // Vehicles.
@@ -229,6 +234,28 @@ bool FSimulation::SaveToFile(const std::string& Path) const {
         W.F32(P.X); W.F32(P.Y); W.F32(P.Radius); W.F32(P.Timer); W.Bool(P.bAlert);
     }
 
+    // v2: campaign / seasons / zones / versus extras
+    W.Str(CurrentSeasonId); W.F32(SeasonDaysLeft); W.F32(DifficultyBias); W.F32(VirusBoostTimer);
+    W.Str(LastHintTrigger);
+    W.U64(ObjectiveList.size());
+    for (const FObjective& O : ObjectiveList) {
+        W.Str(O.Id); W.Str(O.Title); W.Str(O.Description); W.Str(O.Kind); W.Str(O.Target); W.Str(O.HintKey);
+        W.I32(O.TargetCount); W.I32(O.Progress); W.F32(O.UnlockDay); W.Bool(O.bRequired);
+        W.U8(static_cast<std::uint8_t>(O.State));
+    }
+    W.U64(AchievementList.size());
+    for (const FAchievementUnlock& A : AchievementList) {
+        W.Str(A.Id); W.Bool(A.bUnlocked); W.F32(A.UnlockDay);
+    }
+    W.U64(HintList.size());
+    for (const FHint& H : HintList) {
+        W.Str(H.Id); W.Str(H.Title); W.Str(H.Body); W.F32(H.SecondsLeft);
+    }
+    W.U64(QuarantineFlags.size());
+    if (!QuarantineFlags.empty()) W.Bytes(QuarantineFlags.data(), QuarantineFlags.size());
+    W.U64(ShownHintIds.size());
+    for (const auto& Id : ShownHintIds) W.Str(Id);
+
     std::ofstream F(Path, std::ios::binary | std::ios::trunc);
     if (!F) return false;
     F.write(W.Buf.data(), static_cast<std::streamsize>(W.Buf.size()));
@@ -257,6 +284,9 @@ bool FSimulation::LoadFromFile(const std::string& Path) {
     Config.MapWidth = R.I32(); Config.MapHeight = R.I32(); Config.InitialPopulation = R.I32();
     Config.bStartWithPatientZero = R.Bool(); Config.bVersusMode = R.Bool();
     Config.ScenarioId = R.Str(); Config.CityName = R.Str();
+    Config.CampaignId = R.Str(); Config.Language = R.Str(); Config.DifficultyId = R.Str();
+    Config.LocalRole = static_cast<ECoopRole>(R.U8()); Config.MaxPlayers = R.I32();
+    Config.bTutorial = R.Bool(); Config.bDemoMode = R.Bool(); Config.bCountryside = R.Bool();
     const u64 OverrideCount = R.U64();
     Config.RuleOverrides.clear();
     for (u64 i = 0; i < OverrideCount; ++i) {
@@ -317,6 +347,7 @@ bool FSimulation::LoadFromFile(const std::string& Path) {
         C.InfectionSecondsLeft = R.F32(); C.Panic = R.F32(); C.Hunger = R.F32(); C.Thirst = R.F32();
         C.Health = R.F32(); C.CorpseRiseSecondsLeft = R.F32();
         C.TargetX = R.F32(); C.TargetY = R.F32(); C.bHasTarget = R.Bool();
+        C.TypeId = R.Str();
     }
 
     const u64 ZombieCount = R.U64();
@@ -343,6 +374,7 @@ bool FSimulation::LoadFromFile(const std::string& Path) {
         S.TrainSecondsLeft = R.F32(); S.TargetX = R.F32(); S.TargetY = R.F32();
         S.Hp = R.F32(); S.PerSoldierHp = R.F32();
         S.Kills = R.I32(); S.NoiseTimer = R.F32(); S.bWiped = R.Bool();
+        S.bAutoRetreat = R.Bool(); S.CoverBuildingId = R.I32();
     }
 
     const u64 VehicleCount = R.U64();
@@ -416,6 +448,39 @@ bool FSimulation::LoadFromFile(const std::string& Path) {
         NoisePingList.push_back(P);
     }
 
+    CurrentSeasonId = R.Str(); SeasonDaysLeft = R.F32(); DifficultyBias = R.F32(); VirusBoostTimer = R.F32();
+    LastHintTrigger = R.Str();
+    const u64 ObjCount = R.U64();
+    ObjectiveList.clear();
+    for (u64 i = 0; i < ObjCount; ++i) {
+        FObjective O;
+        O.Id = R.Str(); O.Title = R.Str(); O.Description = R.Str(); O.Kind = R.Str();
+        O.Target = R.Str(); O.HintKey = R.Str();
+        O.TargetCount = R.I32(); O.Progress = R.I32(); O.UnlockDay = R.F32(); O.bRequired = R.Bool();
+        O.State = static_cast<EObjectiveState>(R.U8());
+        ObjectiveList.push_back(O);
+    }
+    const u64 AchCount = R.U64();
+    AchievementList.clear();
+    for (u64 i = 0; i < AchCount; ++i) {
+        FAchievementUnlock A;
+        A.Id = R.Str(); A.bUnlocked = R.Bool(); A.UnlockDay = R.F32();
+        AchievementList.push_back(A);
+    }
+    const u64 HintCount = R.U64();
+    HintList.clear();
+    for (u64 i = 0; i < HintCount; ++i) {
+        FHint H;
+        H.Id = R.Str(); H.Title = R.Str(); H.Body = R.Str(); H.SecondsLeft = R.F32();
+        HintList.push_back(H);
+    }
+    const u64 QCount = R.U64();
+    QuarantineFlags.resize(QCount);
+    if (QCount > 0) R.Bytes(QuarantineFlags.data(), QCount);
+    const u64 ShownCount = R.U64();
+    ShownHintIds.clear();
+    for (u64 i = 0; i < ShownCount; ++i) ShownHintIds.push_back(R.Str());
+
     if (!R.bOk) return false;
     bCommandLogEnabled = false;  // never log state restored from disk
     UpdateStats();
@@ -456,6 +521,15 @@ bool FSimulation::ApplyCommand(const FCommand& Cmd) {
     if (Cmd.Verb == "CallEvacuationFlight") return CallEvacuationFlight();
     if (Cmd.Verb == "VirusSpawnHorde" && A.size() >= 4)
         return VirusSpawnHorde(I(0), I(1), A[2], I(3)) >= 0;
+    if (Cmd.Verb == "VirusInfectTile" && A.size() >= 2) return VirusInfectTile(I(0), I(1));
+    if (Cmd.Verb == "VirusContaminate" && A.size() >= 2) return VirusContaminate(I(0), I(1));
+    if (Cmd.Verb == "VirusBoostHorde") return VirusBoostHorde();
+    if (Cmd.Verb == "VirusMutate" && A.size() >= 3) return VirusMutate(A[0], A[1], I(2)) >= 0;
+    if (Cmd.Verb == "StartCampaign" && A.size() >= 1) return StartCampaign(A[0]);
+    if (Cmd.Verb == "UpgradeBuilding" && A.size() >= 1) return UpgradeBuilding(I(0));
+    if (Cmd.Verb == "BuildWallGate" && A.size() >= 1) return BuildWallGate(I(0));
+    if (Cmd.Verb == "DesignateQuarantineZone" && A.size() >= 2)
+        return DesignateQuarantineZone(I(0), I(1) != 0);
     return false;
 }
 

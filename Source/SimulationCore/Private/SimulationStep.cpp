@@ -29,9 +29,16 @@ void FSimulation::RunTick(float Dt) {
     TickInternational(Dt);
     PendingStrikeTick(Dt);
     UpdateContamination(Dt);
+    TickSeasons(Dt);
+    TickCampaign(Dt);
+    TickHints(Dt);
+    TickAdaptiveDifficulty();
+    TickDemoMode(Dt);
     TickMorale(Dt);
     UpdateStats();
     CheckGameResult(Dt);
+    TickAchievements();
+    ClampResourcesToStorage();
 }
 
 // ---------------------------------------------------------------------------
@@ -82,10 +89,11 @@ void FSimulation::UpdateDistrictNetworks() {
         const i32 D = DistrictOfBuilding(B.Id);
         float PGen = Def->PowerGeneration;
         // Solar is a special case until Buildings.csv grows a day/night flag.
-        if (Def->Id == "solar_panel") PGen *= SolarMult * WeatherSolar * Modifier("solar_day_power");
-        Gen[D] += PGen;
+        if (Def->Id == "solar_panel") PGen *= SolarMult * WeatherSolar * Modifier("solar_day_power") * SeasonSolarMult();
+        const float LevelMult = 1.f + static_cast<float>(std::max(0, B.Level - 1)) * BalanceF("UpgradeProductionBonus", 0.25f);
+        Gen[D] += PGen * LevelMult;
         Cons[D] += Def->PowerConsumption;
-        WProd[D] += Def->WaterProduction;
+        WProd[D] += Def->WaterProduction * Modifier("water_yield") * LevelMult;
         WCons[D] += Def->WaterConsumption;
     }
     DistrictPowerGen = Gen;
@@ -206,8 +214,9 @@ void FSimulation::TickEconomy(float Dt) {
         }
         if (bStarved || !B.bPowered) continue;
 
-        Resources.Food += Def->FoodProduction * DayFrac;
-        Resources.Water += Def->WaterProduction * DayFrac;
+        const float LevelMult = 1.f + static_cast<float>(std::max(0, B.Level - 1)) * BalanceF("UpgradeProductionBonus", 0.25f);
+        Resources.Food += Def->FoodProduction * DayFrac * Modifier("farm_yield") * SeasonFoodMult() * LevelMult;
+        Resources.Water += Def->WaterProduction * DayFrac * Modifier("water_yield") * LevelMult;
         Resources.Water -= Def->WaterConsumption * DayFrac;
     }
 
@@ -304,11 +313,18 @@ void FSimulation::TickCitizens(float Dt) {
         // Needs. When the city has food/water, citizens eat and drink (need
         // recovers at the same rate it would decay); during a shortage the
         // need decays, doubled, until they starve.
-        const float HungerRate = BalanceF("HungerDecayPerDay", 0.2f) * Dt / SecPerDay;
+        float HungerMul = 1.f, ThirstMul = 1.f;
+        if (BalanceF("CitizenTypeNeedsEnabled", 0) >= 0.5f) {
+            if (const FCitizenTypeDef* Type = Tables.FindCitizenType(C.TypeId)) {
+                HungerMul = Type->NeedsHunger;
+                ThirstMul = Type->NeedsThirst;
+            }
+        }
+        const float HungerRate = BalanceF("HungerDecayPerDay", 0.2f) * HungerMul * Dt / SecPerDay;
         if (bFoodShortageTick) C.Hunger = Clamp01(C.Hunger - HungerRate * 2.f);
         else C.Hunger = Clamp01(C.Hunger + HungerRate);
         // Homes in districts without water service drain thirst faster.
-        float ThirstRate = BalanceF("ThirstDecayPerDay", 0.4f) * Dt / SecPerDay;
+        float ThirstRate = BalanceF("ThirstDecayPerDay", 0.4f) * ThirstMul * Dt / SecPerDay;
         bool bHomeDry = true;
         if (C.HomeId >= 0 && C.HomeId < static_cast<i32>(BuildingList.size()) &&
             !BuildingList[C.HomeId].bDemolished)
@@ -326,7 +342,9 @@ void FSimulation::TickCitizens(float Dt) {
         if (!C.bLatentInfection) {
             const FTile& T = TileAt(static_cast<i32>(std::floor(C.X)), static_cast<i32>(std::floor(C.Y)));
             if (T.Contamination > 0.05f) {
-                const float Chance = T.Contamination * BalanceF("TileInfectionChancePerSec", 0.003f) * Dt;
+                float Chance = T.Contamination * BalanceF("TileInfectionChancePerSec", 0.003f) * Dt;
+                if (IsDistrictQuarantined(T.District))
+                    Chance *= BalanceF("QuarantineZoneInfectionMultiplier", 0.3f);
                 if (Rng.NextF01() < Chance) { InfectCitizen(C.Id, "contamination"); continue; }
             }
         }
@@ -647,6 +665,7 @@ void FSimulation::TickMorale(float Dt) {
     if (HasPolicy(EPolicy::Curfew)) Morale += BalanceF("CurfewMoralePerDay", -1) * Dt / SecPerDay;
     if (HasPolicy(EPolicy::Quarantine)) Morale += BalanceF("QuarantineMoralePerDay", -2) * Dt / SecPerDay;
     if (HasPolicy(EPolicy::MartialLaw)) Morale += BalanceF("MartialLawMoralePerDay", -3) * Dt / SecPerDay;
+    Morale += SeasonMoralePerDay() * Dt / SecPerDay;
     // Drift toward baseline.
     if (Morale < Baseline) Morale += BalanceF("MoraleRecoveryPerDay", 2) * Dt / SecPerDay;
     Morale = std::max(0.f, std::min(100.f, Morale));
@@ -699,6 +718,20 @@ void FSimulation::UpdateStats() {
     Stats.bNuked = bNuked;
     Stats.Weather = CurrentWeatherId;
     Stats.bNight = IsNight();
+    Stats.Season = CurrentSeasonId;
+    Stats.ObjectivesComplete = 0;
+    Stats.ObjectivesActive = 0;
+    for (const FObjective& O : ObjectiveList) {
+        if (O.State == EObjectiveState::Complete) ++Stats.ObjectivesComplete;
+        if (O.State == EObjectiveState::Active) ++Stats.ObjectivesActive;
+    }
+    Stats.AchievementsUnlocked = 0;
+    for (const FAchievementUnlock& A : AchievementList) if (A.bUnlocked) ++Stats.AchievementsUnlocked;
+    Stats.QuarantineZones = 0;
+    for (char Q : QuarantineFlags) if (Q) ++Stats.QuarantineZones;
+    Stats.DifficultyBias = DifficultyBias;
+    Stats.Music = MusicState();
+    Stats.LeaderboardScore = ComputeLeaderboardScore();
 }
 
 void FSimulation::CheckGameResult(float Dt) {
@@ -715,6 +748,13 @@ void FSimulation::CheckGameResult(float Dt) {
         Result = EGameResult::Lost;
         ResultReason = "No survivors remain.";
         Log(EEventType::GameLost, ResultReason);
+        return;
+    }
+    const i32 EvacTarget = static_cast<i32>(BalanceF("EvacuationWinTarget", 80));
+    if (EvacTarget > 0 && Evacuated >= EvacTarget) {
+        Result = EGameResult::Won;
+        ResultReason = "The survivors have been evacuated.";
+        Log(EEventType::GameWon, ResultReason);
         return;
     }
 
@@ -973,6 +1013,7 @@ void FSimulation::TickMilitary(float Dt) {
                 if (Def->DamagePerSec > 0 && !bLowAmmo && ConsumeAmmo(AmmoCost)) {
                     Z.Hp -= Def->DamagePerSec * S.Size * DamageMod * Dt;
                     S.NoiseTimer = 2.f;  // gunfire noise attracts zombies
+                    if (!Def->WeaponItem.empty()) WearItem(Def->WeaponItem, AmmoCost);
                     if (Z.Hp <= 0.f) KillZombie(TargetZ, S.Id);
                 }
             } else {
@@ -1122,9 +1163,9 @@ void FSimulation::TickHordes(float Dt) {
         if (!S.bWiped && S.State == ESquadState::Active) ++Military;
     for (const FVehicle& V : VehicleList)
         if (!V.bDestroyed) ++Military;
-    const i32 Count = std::max(1, static_cast<i32>(BalanceF("HordeBaseSize", 3)) +
-        static_cast<i32>(Day * BalanceF("HordeGrowthPerDay", 0.4f)) +
-        Military * static_cast<i32>(BalanceF("HordePlayerStrengthWeight", 2)));
+    const i32 Count = std::max(1, static_cast<i32>((BalanceF("HordeBaseSize", 3) +
+        Day * BalanceF("HordeGrowthPerDay", 0.4f) +
+        static_cast<float>(Military) * BalanceF("HordePlayerStrengthWeight", 2)) * DifficultyBias));
     SpawnHordeWave(Count, "the region");
 }
 

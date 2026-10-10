@@ -36,6 +36,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Outbreak|Camera")
     void SetTargetArmLength(float Length);
 
+    // Camera presets 1-4 (district overview / medical / farms / walls).
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Camera")
+    void SnapToPreset(int32 PresetIndex);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Camera")
+    void FocusOnTile(int32 X, int32 Y, float ArmLength = 4000.f);
+
     UPROPERTY(EditAnywhere, Category = "Outbreak|Camera") float MinArmLength = 800.f;
     UPROPERTY(EditAnywhere, Category = "Outbreak|Camera") float MaxArmLength = 24000.f;
     UPROPERTY(EditAnywhere, Category = "Outbreak|Camera") float ZoomSpeed = 2400.f;

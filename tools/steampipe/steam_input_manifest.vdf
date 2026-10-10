@@ -1,0 +1,50 @@
+"In Game Actions"
+{
+    "actions"
+    {
+        "GameControls"
+        {
+            "title" "#OC_Set_Game"
+            "StickPadGyro"
+            {
+                "Move" { "title" "#OC_Move" "input_mode" "joystick_move" }
+            }
+            "AnalogTrigger"
+            {
+                "ZoomIn" { "title" "#OC_ZoomIn" }
+                "ZoomOut" { "title" "#OC_ZoomOut" }
+            }
+            "Button"
+            {
+                "Confirm" { "title" "#OC_Confirm" }
+                "Cancel" { "title" "#OC_Cancel" }
+                "Pause" { "title" "#OC_Pause" }
+                "BuildMenu" { "title" "#OC_Build" }
+                "Command" { "title" "#OC_Command" }
+                "Preset1" { "title" "#OC_Preset1" }
+                "Preset2" { "title" "#OC_Preset2" }
+                "Preset3" { "title" "#OC_Preset3" }
+                "Preset4" { "title" "#OC_Preset4" }
+            }
+        }
+    }
+    "localization"
+    {
+        "english"
+        {
+            "OC_Set_Game" "Outbreak Commander"
+            "OC_Move" "Pan camera"
+            "OC_ZoomIn" "Zoom in"
+            "OC_ZoomOut" "Zoom out"
+            "OC_Confirm" "Confirm / Select"
+            "OC_Cancel" "Cancel"
+            "OC_Pause" "Pause"
+            "OC_Build" "Build menu"
+            "OC_Command" "Issue order"
+            "OC_Preset1" "Camera preset 1"
+            "OC_Preset2" "Camera preset 2"
+            "OC_Preset3" "Camera preset 3"
+            "OC_Preset4" "Camera preset 4"
+        }
+    }
+}

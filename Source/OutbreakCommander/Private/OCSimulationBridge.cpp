@@ -119,6 +119,47 @@ bool UOCSimulationBridge::SendTradeCaravan() { return Sim.SendTradeCaravan(); }
 
 bool UOCSimulationBridge::CallEvacuationFlight() { return Sim.CallEvacuationFlight(); }
 
+bool UOCSimulationBridge::StartCampaign(const FString& CampaignId) {
+    return Sim.StartCampaign(TCHAR_TO_UTF8(*CampaignId));
+}
+bool UOCSimulationBridge::UpgradeBuilding(int32 BuildingId) { return Sim.UpgradeBuilding(BuildingId); }
+bool UOCSimulationBridge::BuildWallGate(int32 WallId) { return Sim.BuildWallGate(WallId); }
+bool UOCSimulationBridge::DesignateQuarantineZone(int32 District, bool bEnabled) {
+    return Sim.DesignateQuarantineZone(District, bEnabled);
+}
+bool UOCSimulationBridge::ApplyDifficulty(const FString& DifficultyId) {
+    return Sim.ApplyDifficulty(TCHAR_TO_UTF8(*DifficultyId));
+}
+void UOCSimulationBridge::SetLanguage(const FString& Lang) { Sim.SetLanguage(TCHAR_TO_UTF8(*Lang)); }
+bool UOCSimulationBridge::DismissHint() { return Sim.DismissHint(); }
+bool UOCSimulationBridge::VirusInfectTile(int32 X, int32 Y) { return Sim.VirusInfectTile(X, Y); }
+bool UOCSimulationBridge::VirusContaminate(int32 X, int32 Y) { return Sim.VirusContaminate(X, Y); }
+bool UOCSimulationBridge::VirusBoostHorde() { return Sim.VirusBoostHorde(); }
+int32 UOCSimulationBridge::VirusMutate(const FString& FromType, const FString& ToType, int32 Count) {
+    return Sim.VirusMutate(TCHAR_TO_UTF8(*FromType), TCHAR_TO_UTF8(*ToType), Count);
+}
+int32 UOCSimulationBridge::GetLeaderboardScore() const { return Sim.ComputeLeaderboardScore(); }
+FString UOCSimulationBridge::Localize(const FString& Key) const {
+    return UTF8_TO_TCHAR(Sim.Localize(TCHAR_TO_UTF8(*Key)).c_str());
+}
+FString UOCSimulationBridge::GetSeason() const { return UTF8_TO_TCHAR(Sim.CurrentSeason().c_str()); }
+FString UOCSimulationBridge::GetMusicState() const {
+    switch (Sim.MusicState()) {
+    case oc::EMusicState::Combat: return TEXT("combat");
+    case oc::EMusicState::Dire: return TEXT("dire");
+    default: return TEXT("calm");
+    }
+}
+void UOCSimulationBridge::NewGameEx(const oc::FSimConfig& Cfg) {
+    if (!bInitialized) return;
+    Sim.NewGame(Cfg);
+    LastEventCount = 0;
+    LastResult = EOCGameResult::Ongoing;
+    BroadcastNewEvents();
+    OnStatsUpdated.Broadcast(GetStatsSnapshot());
+    OnResourcesUpdated.Broadcast(GetResourcesSnapshot());
+}
+
 // --- save / load / report ---
 
 bool UOCSimulationBridge::SaveGame(const FString& Path) {

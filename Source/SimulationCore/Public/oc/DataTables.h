@@ -115,6 +115,65 @@ struct FWeatherDef {
     float MoraleModifierPerDay = 0.f;
 };
 
+struct FSeasonDef {
+    std::string Id, Name, Description;
+    float ZombieActivityMultiplier = 1.f;
+    float SolarPowerMultiplier = 1.f;
+    float MoraleModifierPerDay = 0.f;
+    float FoodYieldMultiplier = 1.f;
+};
+
+struct FCitizenTypeDef {
+    std::string Id, Name, Description;
+    float NeedsHunger = 1.f;
+    float NeedsThirst = 1.f;
+    float Wage = 1.f;
+};
+
+struct FCoopRoleDef {
+    std::string Id, Name, Description;
+    std::vector<std::string> AllowedVerbs;  // "*" = all
+};
+
+struct FCampaignDef {
+    std::string Id, Name, ScenarioId, Description;
+    bool bTutorial = false;
+    float DemoMinutes = 0.f;
+    i32 MissionOrder = 0;
+};
+
+struct FObjectiveDef {
+    std::string Id, CampaignId, Title, Description, Kind, Target, HintKey;
+    i32 TargetCount = 1;
+    float UnlockDay = 0.f;
+    bool bRequired = true;
+};
+
+struct FHintDef {
+    std::string Id, Trigger, Title, Body;
+};
+
+struct FAchievementDef {
+    std::string Id, Name, Description, Kind, Target, SteamApiName;
+    i32 TargetCount = 1;
+};
+
+struct FDifficultyDef {
+    std::string Id, Name, Description;
+    float ZombieSpeedMultiplier = 1.f;
+    float InfectionRateMultiplier = 1.f;
+    float ResourceScarcityMultiplier = 1.f;
+    i32 HordeBaseSize = 3;
+};
+
+struct FInputBindingDef {
+    std::string Action, Keyboard, Mouse, Gamepad, SteamInputAction, Description;
+};
+
+struct FLocEntry {
+    std::string Key, en, de, fa, ar;
+};
+
 // Loads and validates all CSV data tables. LoadFromDirectory returns false and
 // fills GetErrors() when anything is wrong; the unit tests treat any error as
 // a build failure so bad data can never ship.
@@ -139,6 +198,15 @@ public:
     const FRecipeDef* FindRecipe(const std::string& Id) const;
     const FScenarioDef* FindScenario(const std::string& Id) const;
     const FWeatherDef* FindWeather(const std::string& Id) const;
+    const FSeasonDef* FindSeason(const std::string& Id) const;
+    const FCitizenTypeDef* FindCitizenType(const std::string& Id) const;
+    const FCoopRoleDef* FindCoopRole(const std::string& Id) const;
+    const FCampaignDef* FindCampaign(const std::string& Id) const;
+    const FObjectiveDef* FindObjective(const std::string& Id) const;
+    const FHintDef* FindHint(const std::string& Id) const;
+    const FAchievementDef* FindAchievement(const std::string& Id) const;
+    const FDifficultyDef* FindDifficulty(const std::string& Id) const;
+    std::string Localize(const std::string& Key, const std::string& Lang) const;
 
     // Name lists for citizens and squads.
     std::vector<std::string> FirstMaleNames, FirstFemaleNames, LastNames, SquadNames;
@@ -155,6 +223,16 @@ public:
     std::vector<FScenarioDef> Scenarios;
     std::vector<FWeatherDef> Weathers;
     std::vector<FWorldCity> WorldCities;
+    std::vector<FSeasonDef> Seasons;
+    std::vector<FCitizenTypeDef> CitizenTypes;
+    std::vector<FCoopRoleDef> CoopRoles;
+    std::vector<FCampaignDef> Campaigns;
+    std::vector<FObjectiveDef> ObjectiveDefs;
+    std::vector<FHintDef> HintDefs;
+    std::vector<FAchievementDef> AchievementDefs;
+    std::vector<FDifficultyDef> Difficulties;
+    std::vector<FInputBindingDef> InputBindings;
+    std::vector<FLocEntry> LocEntries;
 
 private:
     std::vector<std::string> Errors;
@@ -168,6 +246,15 @@ private:
     std::unordered_map<std::string, const FRecipeDef*> RecipeById;
     std::unordered_map<std::string, const FScenarioDef*> ScenarioById;
     std::unordered_map<std::string, const FWeatherDef*> WeatherById;
+    std::unordered_map<std::string, const FSeasonDef*> SeasonById;
+    std::unordered_map<std::string, const FCitizenTypeDef*> CitizenTypeById;
+    std::unordered_map<std::string, const FCoopRoleDef*> CoopRoleById;
+    std::unordered_map<std::string, const FCampaignDef*> CampaignById;
+    std::unordered_map<std::string, const FObjectiveDef*> ObjectiveById;
+    std::unordered_map<std::string, const FHintDef*> HintById;
+    std::unordered_map<std::string, const FAchievementDef*> AchievementById;
+    std::unordered_map<std::string, const FDifficultyDef*> DifficultyById;
+    std::unordered_map<std::string, const FLocEntry*> LocByKey;
 
     void LoadNames(const std::string& Dir);
     void LoadSoldiers(const std::string& Dir);
@@ -178,6 +265,16 @@ private:
     void LoadScenarios(const std::string& Dir);
     void LoadWeathers(const std::string& Dir);
     void LoadWorldCities(const std::string& Dir);
+    void LoadSeasons(const std::string& Dir);
+    void LoadCitizenTypes(const std::string& Dir);
+    void LoadCoopRoles(const std::string& Dir);
+    void LoadCampaigns(const std::string& Dir);
+    void LoadObjectives(const std::string& Dir);
+    void LoadHints(const std::string& Dir);
+    void LoadAchievements(const std::string& Dir);
+    void LoadDifficulties(const std::string& Dir);
+    void LoadInputBindings(const std::string& Dir);
+    void LoadLocalization(const std::string& Dir);
 
     void RebuildLookupMaps();
     void AddError(const std::string& Msg) { Errors.push_back(Msg); }

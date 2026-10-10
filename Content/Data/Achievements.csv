@@ -1,0 +1,15 @@
+Id,Name,Description,Kind,Target,SteamApiName
+first_blood,First Blood,Neutralize your first zombie,kills,1,ACH_FIRST_BLOOD
+survivor_7,Week One,Survive 7 days,days,7,ACH_SURVIVOR_7
+survivor_30,Month One,Survive 30 days,days,30,ACH_SURVIVOR_30
+city_planner,City Planner,Complete 20 buildings,buildings,20,ACH_CITY_PLANNER
+wall_lord,Wall Lord,Build 50 wall segments,walls,50,ACH_WALL_LORD
+field_marshal,Field Marshal,Recruit 5 squads,squads,5,ACH_FIELD_MARSHAL
+researcher,The Cure,Research the Vaccine Program,tech,vaccine,ACH_THE_CURE
+humanitarian,Air Bridge,Receive 3 aid packages,aid,3,ACH_AIR_BRIDGE
+exodus,Exodus,Evacuate 50 survivors,evacuate,50,ACH_EXODUS
+eradication,Eradication,Win by eradicating the virus,win,eradication,ACH_ERADICATION
+containment,Containment,Win by containing the outbreak,win,containment,ACH_CONTAINMENT
+no_nukes,No Nukes,Win a game without calling a nuclear strike,win_no_nuke,1,ACH_NO_NUKES
+tutorial_done,First Light,Complete the tutorial,campaign,tutorial,ACH_FIRST_LIGHT
+kingsport_held,Kingsport Holds,Complete the Patient Zero story mission,campaign,story_kingsport,ACH_KINGSPORT

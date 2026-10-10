@@ -232,6 +232,16 @@ bool FDataTables::LoadFromDirectory(const std::string& Dir) {
     LoadScenarios(Dir);
     LoadWeathers(Dir);
     LoadWorldCities(Dir);
+    LoadSeasons(Dir);
+    LoadCitizenTypes(Dir);
+    LoadCoopRoles(Dir);
+    LoadCampaigns(Dir);
+    LoadObjectives(Dir);
+    LoadHints(Dir);
+    LoadAchievements(Dir);
+    LoadDifficulties(Dir);
+    LoadInputBindings(Dir);
+    LoadLocalization(Dir);
 
     RebuildLookupMaps();
     return Errors.empty();
@@ -515,6 +525,18 @@ void FDataTables::RebuildLookupMaps() {
     for (const auto& R : Recipes) RecipeById[R.Id] = &R;
     for (const auto& S : Scenarios) ScenarioById[S.Id] = &S;
     for (const auto& W : Weathers) WeatherById[W.Id] = &W;
+    SeasonById.clear(); CitizenTypeById.clear(); CoopRoleById.clear();
+    CampaignById.clear(); ObjectiveById.clear(); HintById.clear();
+    AchievementById.clear(); DifficultyById.clear(); LocByKey.clear();
+    for (const auto& S : Seasons) SeasonById[S.Id] = &S;
+    for (const auto& C : CitizenTypes) CitizenTypeById[C.Id] = &C;
+    for (const auto& R : CoopRoles) CoopRoleById[R.Id] = &R;
+    for (const auto& C : Campaigns) CampaignById[C.Id] = &C;
+    for (const auto& O : ObjectiveDefs) ObjectiveById[O.Id] = &O;
+    for (const auto& H : HintDefs) HintById[H.Id] = &H;
+    for (const auto& A : AchievementDefs) AchievementById[A.Id] = &A;
+    for (const auto& D : Difficulties) DifficultyById[D.Id] = &D;
+    for (const auto& L : LocEntries) LocByKey[L.Key] = &L;
 }
 
 const FResourceDef* FDataTables::FindResource(const std::string& Id) const {
@@ -556,6 +578,275 @@ const FScenarioDef* FDataTables::FindScenario(const std::string& Id) const {
 const FWeatherDef* FDataTables::FindWeather(const std::string& Id) const {
     auto It = WeatherById.find(Id);
     return It != WeatherById.end() ? It->second : nullptr;
+}
+const FSeasonDef* FDataTables::FindSeason(const std::string& Id) const {
+    auto It = SeasonById.find(Id);
+    return It != SeasonById.end() ? It->second : nullptr;
+}
+const FCitizenTypeDef* FDataTables::FindCitizenType(const std::string& Id) const {
+    auto It = CitizenTypeById.find(Id);
+    return It != CitizenTypeById.end() ? It->second : nullptr;
+}
+const FCoopRoleDef* FDataTables::FindCoopRole(const std::string& Id) const {
+    auto It = CoopRoleById.find(Id);
+    return It != CoopRoleById.end() ? It->second : nullptr;
+}
+const FCampaignDef* FDataTables::FindCampaign(const std::string& Id) const {
+    auto It = CampaignById.find(Id);
+    return It != CampaignById.end() ? It->second : nullptr;
+}
+const FObjectiveDef* FDataTables::FindObjective(const std::string& Id) const {
+    auto It = ObjectiveById.find(Id);
+    return It != ObjectiveById.end() ? It->second : nullptr;
+}
+const FHintDef* FDataTables::FindHint(const std::string& Id) const {
+    auto It = HintById.find(Id);
+    return It != HintById.end() ? It->second : nullptr;
+}
+const FAchievementDef* FDataTables::FindAchievement(const std::string& Id) const {
+    auto It = AchievementById.find(Id);
+    return It != AchievementById.end() ? It->second : nullptr;
+}
+const FDifficultyDef* FDataTables::FindDifficulty(const std::string& Id) const {
+    auto It = DifficultyById.find(Id);
+    return It != DifficultyById.end() ? It->second : nullptr;
+}
+
+std::string FDataTables::Localize(const std::string& Key, const std::string& Lang) const {
+    auto It = LocByKey.find(Key);
+    if (It == LocByKey.end()) return Key;
+    const FLocEntry* E = It->second;
+    if (Lang == "de" && !E->de.empty()) return E->de;
+    if (Lang == "fa" && !E->fa.empty()) return E->fa;
+    if (Lang == "ar" && !E->ar.empty()) return E->ar;
+    if (!E->en.empty()) return E->en;
+    return Key;
+}
+
+void FDataTables::LoadSeasons(const std::string& Dir) {
+    Seasons.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Seasons.csv", Text)) { AddError("Seasons.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "ZombieActivityMultiplier", "SolarPowerMultiplier", "MoraleModifierPerDay", "FoodYieldMultiplier"},
+                   Errors, "Seasons.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Seasons.csv", r);
+        FSeasonDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name"); Def.Description = Row.Str("Description");
+        Def.ZombieActivityMultiplier = Row.F("ZombieActivityMultiplier", 1.f);
+        Def.SolarPowerMultiplier = Row.F("SolarPowerMultiplier", 1.f);
+        Def.MoraleModifierPerDay = Row.F("MoraleModifierPerDay", 0.f);
+        Def.FoodYieldMultiplier = Row.F("FoodYieldMultiplier", 1.f);
+        if (Def.Id.empty()) { AddError("Seasons.csv row " + std::to_string(r) + ": empty id"); continue; }
+        if (Seen.count(Def.Id)) AddError("Seasons.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        Seasons.push_back(Def);
+    }
+    if (Seasons.size() < 4) AddError("Seasons.csv: expected 4 seasons (spring, summer, autumn, winter)");
+}
+
+void FDataTables::LoadCitizenTypes(const std::string& Dir) {
+    CitizenTypes.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/CitizenTypes.csv", Text)) { AddError("CitizenTypes.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "NeedsHunger", "NeedsThirst", "Wage"}, Errors, "CitizenTypes.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "CitizenTypes.csv", r);
+        FCitizenTypeDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name"); Def.Description = Row.Str("Description");
+        Def.NeedsHunger = Row.F("NeedsHunger", 1.f); Def.NeedsThirst = Row.F("NeedsThirst", 1.f);
+        Def.Wage = Row.F("Wage", 1.f);
+        if (Def.Id.empty()) { AddError("CitizenTypes.csv row " + std::to_string(r) + ": empty id"); continue; }
+        if (Seen.count(Def.Id)) AddError("CitizenTypes.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        CitizenTypes.push_back(Def);
+    }
+    if (CitizenTypes.empty()) AddError("CitizenTypes.csv: at least one citizen type is required");
+}
+
+void FDataTables::LoadCoopRoles(const std::string& Dir) {
+    CoopRoles.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/CoopRoles.csv", Text)) { AddError("CoopRoles.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "AllowedVerbs"}, Errors, "CoopRoles.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "CoopRoles.csv", r);
+        FCoopRoleDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name"); Def.Description = Row.Str("Description");
+        Def.AllowedVerbs = SplitList(Row.Str("AllowedVerbs"));
+        // SplitList splits on comma; verbs are semicolon-separated, so re-parse.
+        Def.AllowedVerbs.clear();
+        const std::string Raw = Row.Str("AllowedVerbs");
+        std::string Item;
+        for (char C : Raw) {
+            if (C == ';') { if (!Trim(Item).empty()) Def.AllowedVerbs.push_back(Trim(Item)); Item.clear(); }
+            else Item += C;
+        }
+        if (!Trim(Item).empty()) Def.AllowedVerbs.push_back(Trim(Item));
+        if (Def.Id.empty()) { AddError("CoopRoles.csv row " + std::to_string(r) + ": empty id"); continue; }
+        if (Seen.count(Def.Id)) AddError("CoopRoles.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        CoopRoles.push_back(Def);
+    }
+    if (CoopRoles.size() < 4) AddError("CoopRoles.csv: commander, engineer, medic, logistics are required");
+}
+
+void FDataTables::LoadCampaigns(const std::string& Dir) {
+    Campaigns.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Campaign.csv", Text)) { AddError("Campaign.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "ScenarioId", "Tutorial", "MissionOrder"}, Errors, "Campaign.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Campaign.csv", r);
+        FCampaignDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name");
+        Def.ScenarioId = Row.Str("ScenarioId"); Def.Description = Row.Str("Description");
+        Def.bTutorial = Row.I("Tutorial", 0) != 0;
+        Def.DemoMinutes = Row.F("DemoMinutes", 0.f);
+        Def.MissionOrder = Row.I("MissionOrder", 0);
+        if (Def.Id.empty()) { AddError("Campaign.csv row " + std::to_string(r) + ": empty id"); continue; }
+        if (Seen.count(Def.Id)) AddError("Campaign.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        Campaigns.push_back(Def);
+    }
+}
+
+void FDataTables::LoadObjectives(const std::string& Dir) {
+    ObjectiveDefs.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Objectives.csv", Text)) { AddError("Objectives.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "CampaignId", "Kind", "TargetCount"}, Errors, "Objectives.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Objectives.csv", r);
+        FObjectiveDef Def;
+        Def.Id = Row.Str("Id"); Def.CampaignId = Row.Str("CampaignId");
+        Def.Title = Row.Str("Title"); Def.Description = Row.Str("Description");
+        Def.Kind = Row.Str("Kind"); Def.Target = Row.Str("Target");
+        Def.HintKey = Row.Str("HintKey");
+        Def.TargetCount = Row.I("TargetCount", 1);
+        Def.UnlockDay = Row.F("UnlockDay", 0.f);
+        Def.bRequired = Row.I("Required", 1) != 0;
+        if (Def.Id.empty()) { AddError("Objectives.csv row " + std::to_string(r) + ": empty id"); continue; }
+        if (Seen.count(Def.Id)) AddError("Objectives.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        ObjectiveDefs.push_back(Def);
+    }
+}
+
+void FDataTables::LoadHints(const std::string& Dir) {
+    HintDefs.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Hints.csv", Text)) { AddError("Hints.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "Trigger", "Title", "Body"}, Errors, "Hints.csv");
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Hints.csv", r);
+        FHintDef Def;
+        Def.Id = Row.Str("Id"); Def.Trigger = Row.Str("Trigger");
+        Def.Title = Row.Str("Title"); Def.Body = Row.Str("Body");
+        if (Def.Id.empty()) continue;
+        HintDefs.push_back(Def);
+    }
+}
+
+void FDataTables::LoadAchievements(const std::string& Dir) {
+    AchievementDefs.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Achievements.csv", Text)) { AddError("Achievements.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "Kind", "Target", "SteamApiName"}, Errors, "Achievements.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Achievements.csv", r);
+        FAchievementDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name"); Def.Description = Row.Str("Description");
+        Def.Kind = Row.Str("Kind"); Def.Target = Row.Str("Target");
+        Def.SteamApiName = Row.Str("SteamApiName");
+        try { Def.TargetCount = std::stoi(Def.Target); } catch (...) { Def.TargetCount = 1; }
+        if (Def.Id.empty()) continue;
+        if (Seen.count(Def.Id)) AddError("Achievements.csv row " + std::to_string(r) + ": duplicate id '" + Def.Id + "'");
+        Seen[Def.Id] = true;
+        AchievementDefs.push_back(Def);
+    }
+}
+
+void FDataTables::LoadDifficulties(const std::string& Dir) {
+    Difficulties.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Difficulty.csv", Text)) { AddError("Difficulty.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Id", "ZombieSpeedMultiplier", "InfectionRateMultiplier", "ResourceScarcityMultiplier", "HordeBaseSize"},
+                   Errors, "Difficulty.csv");
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Difficulty.csv", r);
+        FDifficultyDef Def;
+        Def.Id = Row.Str("Id"); Def.Name = Row.Str("Name"); Def.Description = Row.Str("Description");
+        Def.ZombieSpeedMultiplier = Row.F("ZombieSpeedMultiplier", 1.f);
+        Def.InfectionRateMultiplier = Row.F("InfectionRateMultiplier", 1.f);
+        Def.ResourceScarcityMultiplier = Row.F("ResourceScarcityMultiplier", 1.f);
+        Def.HordeBaseSize = Row.I("HordeBaseSize", 3);
+        if (Def.Id.empty()) continue;
+        Difficulties.push_back(Def);
+    }
+}
+
+void FDataTables::LoadInputBindings(const std::string& Dir) {
+    InputBindings.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/InputBindings.csv", Text)) { AddError("InputBindings.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Action", "Keyboard", "Gamepad", "SteamInputAction"}, Errors, "InputBindings.csv");
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "InputBindings.csv", r);
+        FInputBindingDef Def;
+        Def.Action = Row.Str("Action"); Def.Keyboard = Row.Str("Keyboard");
+        Def.Mouse = Row.Str("Mouse"); Def.Gamepad = Row.Str("Gamepad");
+        Def.SteamInputAction = Row.Str("SteamInputAction");
+        Def.Description = Row.Str("Description");
+        if (Def.Action.empty()) continue;
+        InputBindings.push_back(Def);
+    }
+    if (InputBindings.size() < 8) AddError("InputBindings.csv: expected the full action set");
+}
+
+void FDataTables::LoadLocalization(const std::string& Dir) {
+    LocEntries.clear();
+    std::string Text;
+    if (!ReadFile(Dir + "/Localization.csv", Text)) { AddError("Localization.csv not found in " + Dir); return; }
+    auto Rows = ParseCsv(Text);
+    RequireColumns(Rows.empty() ? std::vector<std::string>{} : Rows[0],
+                   {"Key", "en", "de", "fa", "ar"}, Errors, "Localization.csv");
+    std::unordered_map<std::string, bool> Seen;
+    for (size_t r = 1; r < Rows.size(); ++r) {
+        FRow Row(Rows[0], Rows[r], Errors, "Localization.csv", r);
+        FLocEntry E;
+        E.Key = Row.Str("Key"); E.en = Row.Str("en"); E.de = Row.Str("de");
+        E.fa = Row.Str("fa"); E.ar = Row.Str("ar");
+        if (E.Key.empty()) continue;
+        if (Seen.count(E.Key)) AddError("Localization.csv row " + std::to_string(r) + ": duplicate key '" + E.Key + "'");
+        Seen[E.Key] = true;
+        LocEntries.push_back(E);
+    }
+    if (LocEntries.size() < 40) AddError("Localization.csv: expected a full EN/DE/FA/AR string table");
 }
 
 } // namespace oc

@@ -71,6 +71,18 @@ void FSimulation::NewGame(const FSimConfig& InConfig) {
     bNuked = false;
     NotableEvents = FNotable{};
     CommandLogList.clear();
+    ObjectiveList.clear();
+    AchievementList.clear();
+    HintList.clear();
+    QuarantineFlags.clear();
+    CurrentSeasonId = "spring";
+    SeasonDaysLeft = BalanceF("SeasonLengthDays", 90);
+    DifficultyBias = 1.f;
+    VirusBoostTimer = 0.f;
+    LastHintTrigger.clear();
+    ShownHintIds.clear();
+    VaccinateAccumulator = 0.0;
+    VaccineCureAccumulator = 0.0;
 
     TimeSeconds = 0.f;
     TickAccumulator = 0.f;
@@ -121,6 +133,8 @@ void FSimulation::NewGame(const FSimConfig& InConfig) {
         const std::string First = Firsts.empty() ? "Citizen" : Firsts[Rng.NextInt(0, static_cast<i32>(Firsts.size()) - 1)];
         const std::string Last = Tables.LastNames.empty() ? "Doe" : Tables.LastNames[Rng.NextInt(0, static_cast<i32>(Tables.LastNames.size()) - 1)];
         C.Name = First + " " + Last;
+        if (!Tables.CitizenTypes.empty())
+            C.TypeId = Tables.CitizenTypes[static_cast<size_t>(C.Id) % Tables.CitizenTypes.size()].Id;
         CitizenList.push_back(C);
     }
     AssignHomes();
@@ -157,6 +171,12 @@ void FSimulation::NewGame(const FSimConfig& InConfig) {
     }
 
     Morale = BalanceF("MoraleBaseline", 70.f);
+    QuarantineFlags.assign(DistrictCount(), 0);
+    if (Config.bTutorial && Config.CampaignId.empty()) Config.CampaignId = "tutorial";
+    if (!Config.CampaignId.empty()) {
+        ActivateCampaignObjectives();
+        PushHint("hint_camera");
+    }
     UpdateDistrictNetworks();
     UpdateStats();
     Log(EEventType::Milestone, "New game: " + Config.CityName + ". Contain the outbreak.");
@@ -271,6 +291,7 @@ i32 FSimulation::BuildWallLine(i32 X1, i32 Y1, i32 X2, i32 Y2) {
         W.BuildProgress = 0.f;
         WallList.push_back(W);
     }
+    MarkWallCorners(WallList.size() - NewSegments.size());
     Log(EEventType::WallBuilt, "Wall line ordered: " + std::to_string(NewSegments.size()) + " segments.");
     LogCommand("BuildWallLine", {std::to_string(X1), std::to_string(Y1), std::to_string(X2), std::to_string(Y2)});
     return static_cast<i32>(NewSegments.size());
@@ -554,6 +575,13 @@ u64 FSimulation::StateHash() const {
         static_cast<u64>(NotableEvents.FirstCuredCitizenId) * 11);
     for (const FTile& T : TileGrid) MixF(T.Contamination);
     for (char F : TileIsFallout) Mix(static_cast<u64>(F));
+    MixF(SeasonDaysLeft); MixF(DifficultyBias); MixF(VirusBoostTimer);
+    for (char C : CurrentSeasonId) Mix(static_cast<u64>(C));
+    Mix(static_cast<u64>(ObjectiveList.size()) * 13 + static_cast<u64>(AchievementList.size()) * 17);
+    for (const FObjective& O : ObjectiveList)
+        Mix(static_cast<u64>(O.State) * 31 + static_cast<u64>(O.Progress));
+    for (char Q : QuarantineFlags) Mix(static_cast<u64>(Q));
+    for (const FWall& W : WallList) Mix((W.bGate ? 3ull : 0ull) + (W.bCorner ? 5ull : 0ull));
     return H;
 }
 
@@ -971,6 +999,7 @@ float FSimulation::ZombieSpeedScale() const {
     if (const FWeatherDef* W = Tables.FindWeather(CurrentWeatherId)) Scale *= W->ZombieActivityMultiplier;
     Scale *= IsNight() ? BalanceF("ZombieNightActivityMultiplier", 1.5f)
                        : BalanceF("ZombieDayActivityMultiplier", 0.7f);
+    Scale *= SeasonZombieMult();
     return Scale;
 }
 

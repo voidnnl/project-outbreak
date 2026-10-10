@@ -13,7 +13,7 @@ A 3D city-management and zombie-survival game seen from a god-like elevated view
 The simulation core compiles and runs with a bare C++17 compiler:
 
 ```bash
-make test   # build + run the unit test suite (371 checks across 34 tests)
+make test   # build + run the unit test suite (500+ checks)
 make demo   # play a full scripted 120-day game headless; prints the
             # procedural AFTER-ACTION REPORT (also saved to build/AfterActionReport.md)
 ```
@@ -30,8 +30,12 @@ make demo   # play a full scripted 120-day game headless; prints the
 - **Emergency policies**: curfew, quarantine, martial law
 - **International**: aid packages, trade caravans, evacuation flights, world news (245 real capital cities)
 - **Scenarios & custom rules**: 6 presets + per-game rule overrides (difficulty)
-- **Endgame**: research the vaccine, vaccinate the city, win by eradication or containment; evacuate survivors
-- **Save/load** (versioned binary snapshots) and **command-log replay** (the deterministic multiplayer foundation)
+- **Endgame**: research the vaccine, vaccinate the city, win by eradication, containment, or evacuation
+- **Campaign**: tutorial (First Light) + story missions (Patient Zero, Virulent Night, Blackout) with objectives, hints, and a 30-minute demo slice
+- **Co-op roles** (commander / engineer / medic / logistics) and **versus** virus commands (infect, contaminate, boost, mutate)
+- **Seasons**, building upgrades, wall gates/corners, quarantine zones, achievements, localization (EN/DE/FA/AR)
+- **Save/load** (versioned binary snapshots, v2) and **command-log replay** (the deterministic multiplayer foundation)
+- **Steam**: achievements, cloud saves, rich presence, lobbies, Steam Input, leaderboards (AppID 480 until assigned)
 - **After-action report**: when the game ends, the sim writes a newspaper-style report — generated headline, situation summary, key figures, timeline of decisive events, notable citizens (Patient Zero, first to turn, first cured), the top squad, and a memorial for the fallen
 
 ## Repository layout
@@ -39,17 +43,20 @@ make demo   # play a full scripted 120-day game headless; prints the
 ```
 OutbreakCommander.uproject   UE5 project file
 Config/                      Engine/game/input config (Lumen, Nanite, maps, key bindings)
-Content/Data/                12 CSV data tables (Balance, Resources, Buildings, ZombieTypes,
+Content/Data/                CSV data tables (Balance, Resources, Buildings, ZombieTypes,
                              Soldiers, Vehicles, TechTree, Items, Recipes, Scenarios,
-                             Weather, Names, WorldCities)
+                             Weather, Names, WorldCities, plus Campaign, Objectives, Hints,
+                             Achievements, Seasons, CitizenTypes, CoopRoles, Localization,
+                             Difficulty, InputBindings)
 Content/Assets/              CC0 3D models (monsters, characters, props) + ATTRIBUTION.md
 Content/Audio/               CC0 SFX (groans, gunfire, footsteps) + adaptive music
 Content/Fonts/               OFL fonts (Chakra Petch HUD, Orbitron title)
 Source/SimulationCore/       Pure C++17 game simulation (deterministic, unit-tested)
 Source/OutbreakCommander/    UE5 presentation layer (camera, input, actors, HUD bridge)
-tests/                       Unit tests for the sim core (self-contained runner)
-tools/                       sim_cli.cpp (full-game demo) + fetch_assets.py (re-downloads assets)
-docs/                        Engine decision, architecture, data, AI/tactics, roadmap
+tests/                       Unit tests for the sim core (self-contained runner, 500+ checks)
+tools/                       sim_cli.cpp (full-game demo), fetch_assets.py, steampipe/
+docs/                        Engine, architecture, data, AI, roadmap, runbook, Steam, editor checklist, legal
+store/                       Steam capsules, hero, screenshots, store copy, trailer storyboard
 ```
 
 ## Opening in Unreal Engine

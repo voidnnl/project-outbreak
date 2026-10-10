@@ -1,0 +1,114 @@
+Key,en,de,fa,ar
+game.title,Outbreak Commander,Outbreak Commander,فرمانده شیوع,قائد التفشي
+game.tagline,"Command the city. Contain the virus. Save humanity.","Kommando über die Stadt. Den Virus eindämmen. Die Menschheit retten.","شهر را فرماندهی کن. ویروس را مهار کن. بشریت را نجات بده.","قُد المدينة. احتوِ الفيروس. أنقذ البشرية."
+hud.money,Money,Geld,پول,المال
+hud.food,Food,Nahrung,غذا,الطعام
+hud.water,Water,Wasser,آب,الماء
+hud.fuel,Fuel,Treibstoff,سوخت,الوقود
+hud.materials,Materials,Material,مواد,المواد
+hud.medicine,Medicine,Medizin,دارو,الدواء
+hud.ammo,Ammo,Munition,مهمات,الذخيرة
+hud.research,Research,Forschung,پژوهش,البحث
+hud.power,Power,Strom,برق,الطاقة
+hud.morale,Morale,Moral,روحیه,المعنويات
+hud.day,Day,Tag,روز,اليوم
+hud.night,Night,Nacht,شب,الليل
+hud.population,Population,Bevölkerung,جمعیت,السكان
+hud.infected,Infected,Infiziert,آلوده,المصابون
+hud.zombies,Zombies,Zombies,زامبی‌ها,الزومبي
+hud.squads,Squads,Trupps,گروهان‌ها,الفرق
+hud.weather,Weather,Wetter,آب‌وهوا,الطقس
+hud.season,Season,Jahreszeit,فصل,الفصل
+hud.objectives,Objectives,Ziele,اهداف,الأهداف
+hud.alerts,Alerts,Meldungen,هشدارها,التنبيهات
+menu.newgame,New Game,Neues Spiel,بازی جدید,لعبة جديدة
+menu.continue,Continue,Fortsetzen,ادامه,متابعة
+menu.load,Load Game,Spiel laden,بارگذاری,تحميل اللعبة
+menu.save,Save Game,Spiel speichern,ذخیره,حفظ اللعبة
+menu.settings,Settings,Einstellungen,تنظیمات,الإعدادات
+menu.quit,Quit,Beenden,خروج,خروج
+menu.campaign,Campaign,Kampagne,کمپین,الحملة
+menu.sandbox,Sandbox,Sandbox,سندباکس,وضع حر
+menu.coop,Co-op,Koop,همکاری,تعاوني
+menu.versus,Versus,Versus,مقابل,مواجهة
+menu.tutorial,Tutorial,Tutorial,آموزش,التعليم
+menu.credits,Credits,Mitwirkende,عوامل,الشكر
+menu.resume,Resume,Weiter,ازسرگیری,استئناف
+menu.exit_to_menu,Exit to Menu,Zum Menü,بازگشت به منو,إلى القائمة
+settings.graphics,Graphics,Grafik,گرافیک,الرسوم
+settings.audio,Audio,Audio,صدا,الصوت
+settings.input,Input,Steuerung,ورودی,التحكم
+settings.accessibility,Accessibility,Barrierefreiheit,دسترسی‌پذیری,إمكانية الوصول
+settings.language,Language,Sprache,زبان,اللغة
+settings.quality,Quality,Qualität,کیفیت,الجودة
+settings.quality.low,Low,Niedrig,پایین,منخفض
+settings.quality.medium,Medium,Mittel,متوسط,متوسط
+settings.quality.high,High,Hoch,بالا,مرتفع
+settings.quality.epic,Epic,Episch,حماسی,ملحمي
+settings.fullscreen,Fullscreen,Vollbild,تمام‌صفحه,ملء الشاشة
+settings.vsync,VSync,VSync,همگام‌سازی عمودی,مزامنة عمودية
+settings.upscale,Upscaling,Upscaling,ارتقای تصویر,الترقية
+settings.upscale.dlss,DLSS,DLSS,DLSS,DLSS
+settings.upscale.fsr,FSR,FSR,FSR,FSR
+settings.upscale.xess,XeSS,XeSS,XeSS,XeSS
+settings.upscale.tsr,TSR,TSR,TSR,TSR
+settings.mastervolume,Master Volume,Gesamtlautstärke,صدای اصلی,مستوى الصوت العام
+settings.sfxvolume,SFX Volume,Effektlautstärke,جلوه‌های صوتی,المؤثرات
+settings.musicvolume,Music Volume,Musiklautstärke,موسیقی,الموسيقى
+settings.subtitles,Subtitles,Untertitel,زیرنویس,الترجمة
+access.colorblind,Colorblind Mode,Farbenblind-Modus,حالت کوررنگی,وضع عمى الألوان
+access.colorblind.none,None,Keine,هیچ,بدون
+access.colorblind.protanopia,Protanopia,Protanopie,پروتانوپیا,عمى الأحمر
+access.colorblind.deuteranopia,Deuteranopia,Deuteranopie,دوترانوپیا,عمى الأخضر
+access.colorblind.tritanopia,Tritanopia,Tritanopie,تریتانوپیا,عمى الأزرق
+access.textscale,Text Scale,Textgröße,اندازه متن,حجم النص
+access.reducedmotion,Reduced Motion,Reduzierte Bewegung,کاهش حرکت,تقليل الحركة
+access.uiscale,UI Scale,UI-Skalierung,مقیاس رابط,مقياس الواجهة
+access.screenreader,Screen Reader Prompts,Screenreader-Hinweise,راهنمای صفحه‌خوان,قارئ الشاشة
+access.controller,Full Controller Support,Vollständige Controller-Unterstützung,پشتیبانی کامل دسته,دعم كامل لوحدة التحكم
+policy.curfew,Curfew,Ausgangssperre,منع آمدوشد,حظر التجول
+policy.quarantine,Quarantine,Quarantäne,قرنطینه,الحجر الصحي
+policy.martiallaw,Martial Law,Kriegsrecht,حکومت نظامی,الأحكام العرفية
+role.commander,Commander,Kommandant,فرمانده,القائد
+role.engineer,Engineer,Ingenieur,مهندس,المهندس
+role.medic,Medic,Sanitäter,پزشک,المسعف
+role.logistics,Logistics,Logistik,لجستیک,الإمداد
+role.virus,Virus,Virus,ویروس,الفيروس
+season.spring,Spring,Frühling,بهار,الربيع
+season.summer,Summer,Sommer,تابستان,الصيف
+season.autumn,Autumn,Herbst,پاییز,الخريف
+season.winter,Winter,Winter,زمستان,الشتاء
+result.won,Victory,Sieg,پیروزی,نصر
+result.lost,Defeat,Niederlage,شکست,هزيمة
+result.eradication,The virus has been eradicated.,Der Virus wurde ausgelöscht.,ویروس ریشه‌کن شد.,تم القضاء على الفيروس.
+result.containment,The outbreak is contained.,Der Ausbruch ist eingedämmt.,شیوع مهار شد.,تم احتواء التفشي.
+result.evacuation,The survivors have been evacuated.,Die Überlebenden wurden evakuiert.,بازماندگان تخلیه شدند.,تم إجلاء الناجين.
+result.overwhelmed,The infection has overwhelmed the city.,Die Infektion hat die Stadt überwältigt.,عفونت شهر را در هم شکست.,تغلبت العدوى على المدينة.
+result.nosurvivors,No survivors remain.,Keine Überlebenden.,هیچ بازمانده‌ای نماند.,لم يبقَ ناجون.
+obj.complete,Objective complete,Ziel erreicht,هدف انجام شد,اكتمل الهدف
+obj.failed,Objective failed,Ziel gescheitert,هدف شکست خورد,فشل الهدف
+hint.dismiss,Got it,Verstanden,فهمیدم,حسنًا
+demo.over,Demo complete. Wishlist Outbreak Commander on Steam.,Demo beendet. Wunschdir Outbreak Commander auf Steam.,دمو تمام شد. Outbreak Commander را در استیم به لیست علاقه‌مندی اضافه کنید.,انتهت التجربة. أضِف Outbreak Commander إلى قائمة الأمنيات على ستيم.
+steam.invite,Invite Friend,Freund einladen,دعوت دوست,دعوة صديق
+steam.overlay,Steam Overlay,Steam-Overlay,اوورلی استیم,طبقة ستيم
+cloud.save,Cloud Save,Cloud-Speicher,ذخیره ابری,حفظ سحابي
+crash.report,Send crash report,Absturzbericht senden,ارسال گزارش خرابی,إرسال تقرير العطل
+input.remap,Press a key…,Taste drücken…,کلیدی را فشار دهید…,اضغط مفتاحًا…
+ui.build,Build,Bauen,ساخت,بناء
+ui.military,Military,Militär,نظامی,العسكري
+ui.research,Research,Forschung,پژوهش,البحث
+ui.crafting,Crafting,Fertigung,ساخت‌وساز,التصنيع
+ui.international,International,International,بین‌المللی,الدولي
+ui.airstrike,Airstrike,Luftschlag,حمله هوایی,ضربة جوية
+ui.nuke,Nuclear Option,Nukleare Option,گزینه هسته‌ای,الخيار النووي
+ui.evacuate,Evacuate,Evakuieren,تخلیه,إخلاء
+ui.aid,Request Aid,Hilfe anfordern,درخواست کمک,طلب مساعدة
+ui.trade,Trade Caravan,Handelskarawane,کاروان تجاری,قافلة تجارية
+ui.heatmap,Infection Heatmap,Infektionskarte,نقشه حرارت آلودگی,خريطة العدوى
+ui.minimap,Minimap,Minikarte,نقشه کوچک,الخريطة المصغرة
+lang.en,English,Englisch,انگلیسی,الإنجليزية
+lang.de,German,Deutsch,آلمانی,الألمانية
+lang.fa,Persian,Persisch,فارسی,الفارسية
+lang.ar,Arabic,Arabisch,عربی,العربية
+tutorial.welcome,Welcome to Kingsport. You command this city.,Willkommen in Kingsport. Du befehligst diese Stadt.,به کینگزپورت خوش آمدی. تو فرمانده این شهری.,مرحبًا بك في كينغسبورت. أنت قائد هذه المدينة.
+credits.body,Outbreak Commander Team. Third-party assets: see Content/Assets/ATTRIBUTION.md,Outbreak Commander Team. Drittanbieter-Assets: siehe Content/Assets/ATTRIBUTION.md,تیم فرمانده شیوع. دارایی‌های شخص ثالث: Content/Assets/ATTRIBUTION.md,فريق قائد التفشي. الأصول الخارجية: Content/Assets/ATTRIBUTION.md

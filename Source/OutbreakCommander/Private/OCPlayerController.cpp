@@ -2,6 +2,7 @@
 #include "OCGameMode.h"
 #include "OCGodPawn.h"
 #include "OCSimulationBridge.h"
+#include "oc/Simulation.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/Engine.h"
@@ -21,6 +22,7 @@ void AOCPlayerController::BeginPlay() {
     if (ULocalPlayer* LP = GetLocalPlayer()) {
         if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()) {
             if (IMC_Default) Subsystem->AddMappingContext(IMC_Default, 0);
+            if (IMC_Gamepad) Subsystem->AddMappingContext(IMC_Gamepad, 1);
         }
     }
 }
@@ -38,6 +40,47 @@ void AOCPlayerController::SetupInputComponent() {
         }
         if (IA_BuildCancel) EIC->BindAction(IA_BuildCancel, ETriggerEvent::Started, this, &AOCPlayerController::OnBuildCancel);
         if (IA_Pause) EIC->BindAction(IA_Pause, ETriggerEvent::Started, this, &AOCPlayerController::OnPause);
+    }
+}
+
+void AOCPlayerController::SnapCameraPreset(int32 PresetIndex) {
+    if (APawn* P = GetPawn()) if (AOCGodPawn* God = Cast<AOCGodPawn>(P)) God->SnapToPreset(PresetIndex);
+}
+
+void AOCPlayerController::CycleSpeed() {
+    static const float Speeds[] = {1.f, 2.f, 4.f};
+    SpeedIndex = (SpeedIndex + 1) % 3;
+    SimSpeed = Speeds[SpeedIndex];
+}
+
+bool AOCPlayerController::GetWallDragPreview(FIntPoint& OutStart, FIntPoint& OutEnd) const {
+    if (!bDraggingWall) return false;
+    OutStart = DragStartTile;
+    OutEnd = DragEndTile;
+    return true;
+}
+
+void AOCPlayerController::SelectAtScreen(FVector2D ScreenPos) {
+    FIntPoint Tile;
+    if (!ScreenToTile(ScreenPos, Tile)) return;
+    SelectedSquadId = -1;
+    SelectedBuildingId = -1;
+    if (UOCSimulationBridge* Bridge = GetBridge()) {
+        const oc::FSimulation& Sim = Bridge->GetSim();
+        for (const oc::FSquad& S : Sim.Squads()) {
+            if (S.bWiped) continue;
+            if (FMath::Abs(S.X - Tile.X) < 1.5f && FMath::Abs(S.Y - Tile.Y) < 1.5f) {
+                SelectedSquadId = S.Id;
+                return;
+            }
+        }
+        for (const oc::FBuilding& B : Sim.Buildings()) {
+            if (B.bDemolished) continue;
+            if (Tile.X >= B.X && Tile.X < B.X + B.W && Tile.Y >= B.Y && Tile.Y < B.Y + B.H) {
+                SelectedBuildingId = B.Id;
+                return;
+            }
+        }
     }
 }
 
@@ -147,8 +190,10 @@ void AOCPlayerController::OnBuildConfirmReleased(const FInputActionValue&) {
 }
 
 void AOCPlayerController::UpdateWallDrag() {
-    // A HUD widget can poll the drag endpoints to draw the wall preview ghost.
-    // (Preview rendering is a content task; the drag state lives here.)
+    if (!bDraggingWall) return;
+    FVector2D MousePos;
+    if (!GetMousePosition(MousePos.X, MousePos.Y)) return;
+    ScreenToTile(MousePos, DragEndTile);
 }
 
 void AOCPlayerController::OnBuildCancel(const FInputActionValue&) {

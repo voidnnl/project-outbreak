@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sim-core:
+    name: make test && make demo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compiler
+        run: sudo apt-get update && sudo apt-get install -y g++ make
+      - name: Unit tests
+        run: make test
+      - name: Headless demo + after-action report
+        run: make demo
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: after-action-report
+          path: build/AfterActionReport.md
+          if-no-files-found: ignore

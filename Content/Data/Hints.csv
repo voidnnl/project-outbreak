@@ -1,0 +1,12 @@
+Id,Trigger,Title,Body
+hint_camera,start,Command the city,"WASD or the left stick pans. Mouse wheel or LT/RT zooms. Q/E or RB/LB rotates. Edge-scroll is on."
+hint_build,first_build,Build menu,"1-9 open build categories. Left click places a building. Drag left-click to raise walls; corners and gates snap automatically."
+hint_military,first_zombie,The dead walk,"Recruit militia from the military panel (hotkey M). Right-click issues Attack / Guard / Patrol / Retreat. Squads focus-fire and retreat on their own when wounded."
+hint_survive,night,Night falls,"Zombies are faster after dark. Solar panels go idle. Keep the medical center powered."
+hint_policy,first_infection,Emergency powers,"Curfew, Quarantine, and Martial Law live on the Policies panel. They slow the virus at a morale cost."
+hint_walls,horde,Walls and gates,"Drag a wall line. Auto-corners appear on turns. Convert a segment to a gate (hotkey G) so squads can pass; gates are weaker."
+hint_research,day_2,Research,"Open the tech tree (hotkey T). Triage Protocols is the first medical tech; the Vaccine Program is the endgame."
+hint_power,power_outage,The grid,"Districts go dark when generation cannot cover demand. Build a generator or cut a power line to isolate a lost district."
+hint_ammo,low_ammo,Ammo discipline,"Squads hold fire when the stockpile is below the low-ammo threshold. Queue Ammunition at a workshop."
+hint_food,low_food,Hunger,"Build farms. Hydroponics later boosts yield. Shortages tank morale and then health."
+hint_controller,gamepad,Controller,"D-pad selects build categories. A confirms, B cancels, Y opens the command radial, LB/RB rotate, LT/RT zoom. Steam Input remaps everything."

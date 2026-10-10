@@ -86,7 +86,16 @@ enum class EEventType : std::uint8_t {
     PolicyChanged,
     Milestone,
     GameWon,
-    GameLost
+    GameLost,
+    ObjectiveComplete,
+    ObjectiveFailed,
+    AchievementUnlocked,
+    SeasonChanged,
+    HintShown,
+    DemoEnded,
+    GateBuilt,
+    BuildingUpgraded,
+    QuarantineDesignated
 };
 
 struct FSimEvent {
@@ -101,6 +110,15 @@ enum class ESquadState : std::uint8_t { Training, Active };
 
 // --- emergency policies ---
 enum class EPolicy : std::uint8_t { Curfew, Quarantine, MartialLaw };
+
+// --- co-op roles (brief section 9) ---
+enum class ECoopRole : std::uint8_t { Commander, Engineer, Medic, Logistics, Virus };
+
+// --- campaign / tutorial ---
+enum class EObjectiveState : std::uint8_t { Hidden, Active, Complete, Failed };
+
+// --- adaptive audio (presentation reads this; sim only classifies) ---
+enum class EMusicState : std::uint8_t { Calm, Combat, Dire };
 
 // ---------------------------------------------------------------------------
 // Config / stats
@@ -117,6 +135,15 @@ struct FSimConfig {
     std::string CityName = "Kingsport";
     // Custom rule overrides (brief section 11): Balance.csv keys -> values.
     std::unordered_map<std::string, float> RuleOverrides;
+    // Campaign / co-op / demo (all default off so existing tests are unchanged).
+    std::string CampaignId;
+    std::string Language = "en";
+    std::string DifficultyId = "normal";
+    ECoopRole LocalRole = ECoopRole::Commander;
+    i32 MaxPlayers = 1;
+    bool bTutorial = false;
+    bool bDemoMode = false;
+    bool bCountryside = false;
 };
 
 struct FStats {
@@ -147,6 +174,14 @@ struct FStats {
     bool bNuked = false;
     std::string Weather = "clear";
     bool bNight = false;
+    std::string Season = "spring";
+    i32 ObjectivesComplete = 0;
+    i32 ObjectivesActive = 0;
+    i32 AchievementsUnlocked = 0;
+    i32 QuarantineZones = 0;
+    float DifficultyBias = 1.f;
+    EMusicState Music = EMusicState::Calm;
+    i32 LeaderboardScore = 0;
 };
 
 // ---------------------------------------------------------------------------
@@ -170,6 +205,7 @@ struct FSquad {
     float NoiseTimer = 0;   // >0 while this squad's gunfire can attract zombies
     bool bWiped = false;    // tombstone; indices stay stable
     bool bAutoRetreat = false;  // tactical self-preservation (low HP)
+    i32 CoverBuildingId = -1;   // building the squad is using as cover, -1 = none
 };
 
 struct FVehicle {
@@ -225,6 +261,29 @@ struct FCommand {
     float TimeSeconds = 0;
     std::string Verb;
     std::vector<std::string> Args;
+};
+
+// Campaign objective instance (definitions live in Objectives.csv).
+struct FObjective {
+    std::string Id, Title, Description, Kind, Target, HintKey;
+    i32 TargetCount = 1;
+    i32 Progress = 0;
+    float UnlockDay = 0.f;
+    bool bRequired = true;
+    EObjectiveState State = EObjectiveState::Hidden;
+};
+
+// Achievement unlock record (definitions live in Achievements.csv).
+struct FAchievementUnlock {
+    std::string Id;
+    bool bUnlocked = false;
+    float UnlockDay = -1.f;
+};
+
+// Active on-screen hint.
+struct FHint {
+    std::string Id, Title, Body;
+    float SecondsLeft = 0.f;
 };
 
 } // namespace oc

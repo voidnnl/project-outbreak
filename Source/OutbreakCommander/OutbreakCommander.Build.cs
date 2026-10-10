@@ -25,6 +25,7 @@ public class OutbreakCommander : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] {
             "OnlineSubsystem",
+            "OnlineSubsystemUtils",
             "OnlineSubsystemSteam",
         });
     }

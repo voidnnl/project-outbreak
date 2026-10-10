@@ -37,6 +37,26 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Outbreak|Build")
     void CancelBuildMode();
 
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Build")
+    bool GetWallDragPreview(FIntPoint& OutStart, FIntPoint& OutEnd) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Select")
+    void SelectAtScreen(FVector2D ScreenPos);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Select")
+    int32 GetSelectedSquadId() const { return SelectedSquadId; }
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Select")
+    int32 GetSelectedBuildingId() const { return SelectedBuildingId; }
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Camera")
+    void SnapCameraPreset(int32 PresetIndex);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    void CycleSpeed();
+
+    UPROPERTY(BlueprintReadOnly, Category = "Outbreak|Sim") float SimSpeed = 1.f;
+
     // Projects a screen position onto the sim ground plane; returns the tile.
     UFUNCTION(BlueprintCallable, Category = "Outbreak|Build")
     bool ScreenToTile(FVector2D ScreenPos, FIntPoint& OutTile) const;
@@ -66,6 +86,12 @@ private:
     UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_BuildConfirm = nullptr;
     UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_BuildCancel = nullptr;
     UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_Pause = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_SpeedUp = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_CameraPreset1 = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_CameraPreset2 = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_CameraPreset3 = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputAction> IA_CameraPreset4 = nullptr;
+    UPROPERTY(EditDefaultsOnly, Category = "Outbreak|Input") TObjectPtr<UInputMappingContext> IMC_Gamepad = nullptr;
 
     EOCBuildMode BuildMode = EOCBuildMode::None;
     FString PendingBuildingDefId;
@@ -73,4 +99,8 @@ private:
     // Wall drag state.
     bool bDraggingWall = false;
     FIntPoint DragStartTile = FIntPoint::ZeroValue;
+    FIntPoint DragEndTile = FIntPoint::ZeroValue;
+    int32 SelectedSquadId = -1;
+    int32 SelectedBuildingId = -1;
+    int32 SpeedIndex = 0;
 };

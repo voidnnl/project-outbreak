@@ -1,0 +1,6 @@
+Id,Name,ScenarioId,Description,Tutorial,DemoMinutes,MissionOrder
+tutorial,First Light,tutorial,"Learn to command: camera, build, recruit, survive.",1,15,0
+story_kingsport,Patient Zero,story,"The first 30-minute story mission. Contain the outbreak in Kingsport.",0,30,1
+story_porthope,Virulent Night,virulent,"A fast-mutating strain hits Port Hope.",0,0,2
+story_grayharbor,Blackout,blackout,"The outbreak starts during a city-wide power failure.",0,0,3
+endless,Endless Sandbox,sandbox,"No objectives. Last as long as you can.",0,0,99

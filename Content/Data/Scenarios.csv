@@ -5,3 +5,5 @@ virulent,Virulent Strain,Port Hope,"A fast-mutating virus. Incubation is hours, 
 blackout,Blackout,Gray Harbor,"The outbreak starts during a city-wide power failure.",120,0.1,1,1,1,0
 overrun,Overrun,Deadwood,"The military is already overwhelmed. Survive as long as you can.",250,0.08,1.3,1.5,1.5,2
 sandbox,Sandbox,Freeport,"Custom rules. Everything is configurable.",150,0.1,1,1,1,0
+tutorial,First Light,Millbrook,"Guided first session: survey the city, build, recruit, survive.",80,0.2,0.7,0.6,0.8,0
+story,Patient Zero,Kingsport,"The 30-minute story mission. Contain the first outbreak.",150,0.1,1,1,1,0

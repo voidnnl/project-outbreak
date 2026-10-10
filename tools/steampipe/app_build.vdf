@@ -1,0 +1,14 @@
+"AppBuild"
+{
+    "AppID" "480"
+    "Desc" "Outbreak Commander 1.0.0"
+    "BuildOutput" "./output/"
+    "ContentRoot" "../../Saved/StagedBuilds/Windows/"
+    "SetLive" ""
+    "Preview" "0"
+    "Local" ""
+    "Depots"
+    {
+        "481" "depot_build.vdf"
+    }
+}

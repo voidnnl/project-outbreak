@@ -79,8 +79,24 @@ evacuation flavor. Source: `github.com/mledoze/countries` +
 4. **One concern per file.** New tunables go in `Balance.csv`.
 5. CSV quoting: fields with commas must be double-quoted; `""` escapes.
 
+### `Seasons.csv` — spring / summer / autumn / winter
+Spring is identity (1.0) so short games match the prototype.
+
+### `CitizenTypes.csv` — civilian / doctor / farmer / engineer / soldier
+Assigned as `Id % N` (no extra RNG). Needs scaling is opt-in (`CitizenTypeNeedsEnabled`).
+
+### `Campaign.csv` / `Objectives.csv` / `Hints.csv` — tutorial + story missions
+
+### `Achievements.csv` — Steam achievement definitions (`SteamApiName`)
+
+### `CoopRoles.csv` — commander / engineer / medic / logistics / virus verb sets
+
+### `Difficulty.csv` — story / normal / hard / nightmare / custom
+
+### `Localization.csv` — Key, en, de, fa, ar
+
+### `InputBindings.csv` — keyboard / mouse / gamepad / Steam Input action names
+
 ## Planned Phase 2+ tables (same pattern)
 
-- `CitizenTypes.csv` — citizen archetypes (needs profiles, wages)
-- `Squads.csv` / `Vehicles.csv` (extend) — more unit/vehicle variety
-- `Localization.csv` — string keys for the localization system (brief §13)
+- Additional unit/vehicle rows go in `Soldiers.csv` / `Vehicles.csv` (stable ids).

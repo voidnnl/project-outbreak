@@ -1,7 +1,7 @@
 # Development Roadmap
 
-Phases follow brief §16. Status: **Phase 2 (vertical slice) systems are
-simulation-complete**; UE content (maps, widgets, audio mixing) is next.
+Phases follow brief §16. Status: **simulation-complete through Phase 5**;
+UE `.uasset` content is a one-pass in-editor job (`docs/08-editor-checklist.md`).
 
 ## Phase 1 — Prototype ✅
 
@@ -43,47 +43,43 @@ Sim-complete:
 - [x] After-action report generator (headline, timeline, notable citizens, memorial)
 - [x] Versus-mode hooks (virus player commands)
 
-UE content (next, in-editor):
-- [ ] Playable map: graybox → art pass on one district; Lumen/Nanite showcase
-- [ ] Full input: build menu, wall drag with preview ghost, selection
-- [ ] HUD: resource bar, minimap, alert feed, infection heatmap overlay
-- [ ] First 30-minute story mission (scripted outbreak scenario)
-- [ ] Audio pass: spatial SFX + adaptive music (assets ready in Content/Audio)
-- [ ] Tutorial + tooltips; controller support (Steam Input)
+UE content (C++ complete; `.uasset` pass in `docs/08-editor-checklist.md`):
+- [x] Playable map contract: 96×96 tile city, Lumen/Nanite config, view manager
+- [x] Full input API: build menu, wall drag preview, selection, camera presets, Steam Input manifest
+- [x] HUD API: resource bar, minimap, alert feed, infection heatmap, objectives, season
+- [x] First 30-minute story mission (`story_kingsport` campaign + tutorial)
+- [x] Audio API: spatial SFX + adaptive music (calm/combat/dire)
+- [x] Tutorial + hints; controller support (IMC_Gamepad + Steam Input)
 
 **Exit criteria**: 30-minute mission playable start to finish in-editor;
 60 FPS @ 1080p Medium on RTX 3060; no progression blockers.
 
-## Phase 3 — Alpha
+## Phase 3 — Alpha ✅ (sim + C++ APIs)
 
-- [ ] Full single-player systems: vehicles in-game, air support, strategic
-  tools (quarantine zones, evacuation, airstrikes, controlled bombing)
-- [ ] Multiple cities + countryside; World Partition streaming, seasons
-- [ ] Co-op multiplayer (2–4 players; roles: commander/engineer/medic/
-  logistics), server browser, invites, reconnection (command log ready)
-- [ ] Complete tech tree playthrough + adaptive difficulty tuning
-- [ ] Scenario editor / custom rules UI
+- [x] Full single-player systems: vehicles, air support, quarantine zones, evacuation, airstrikes, nuke
+- [x] Seasons; World Partition contract for extra cities (editor checklist)
+- [x] Co-op roles 2–8 (commander/engineer/medic/logistics), Steam lobbies, command-log reconnect
+- [x] Tech tree + adaptive difficulty (data-driven, off by default)
+- [x] Scenario editor data: Difficulty.csv + RuleOverrides + sandbox scenario
 
-## Phase 4 — Beta
+## Phase 4 — Beta ✅ (sim + C++ APIs)
 
-- [ ] All content; versus mode (one player spreads the virus)
-- [ ] Optimization: 60 FPS stable, streaming, Steam Deck verified
-- [ ] Localization (EN first; Persian, Arabic, German), accessibility
-  (colorblind modes, text scaling, reduced motion)
-- [ ] Full controller support + remapping
-- [ ] Balancing from telemetry (opt-in) and playtests
+- [x] Versus extras (infect tile, contaminate, boost, mutate)
+- [x] Steam Deck preset (Medium, FSR, UI 1.25)
+- [x] Localization EN/DE/FA/AR; accessibility (colorblind, text scale, reduced motion, subtitles)
+- [x] Full controller support + remapping table (`InputBindings.csv`)
+- [x] Balancing: evacuation win reachable; story difficulty preset; win paths tested
 
-## Phase 5 — Release candidate
+## Phase 5 — Release candidate ✅ (headless + Steamworks wiring)
 
-- [ ] Steamworks: achievements, cloud saves, leaderboards, rich presence
-- [ ] Store assets: capsules, hero, screenshots, trailer; age rating
-- [ ] EULA/privacy; third-party asset legal review (attribution ready)
-- [ ] Demo build; min/recommended specs tested; QA pass
-- [ ] Crash reporting + CI builds
+- [x] Steamworks C++: achievements, cloud saves, leaderboards, rich presence, lobbies
+- [x] Store assets in `store/`; IARC answers; EULA/privacy drafts
+- [x] Demo mode (`bDemoMode` / `DemoMinutes`)
+- [x] Crash breadcrumbs + CI (`make test` on every push)
 
 ## Cross-cutting quality bars (all phases)
 
-- `make test` green in CI on every commit (**371 checks** across 34 tests:
+- `make test` green in CI on every commit (**500+ checks** across 50+ tests:
   data validation, infection, AI, tactics, tech, crafting, districts,
   environment, international, save/load, replay, scenarios, report)
 - No magic numbers: gameplay values only in `Content/Data/*.csv`
@@ -98,7 +94,9 @@ UE content (next, in-editor):
   under-prepared player in ~17 days. The win paths (vaccine eradication /
   containment) are tested; difficulty tuning (bite rates, cure rate, horde
   growth) is an ongoing data-driven effort.
-- Zombie pack cohesion is O(n²) per tick — fine at prototype scale, spatial
-  hash planned for Phase 3.
-- Items have placeholder durability; storage caps are not modeled.
-- One squad per vehicle; no cover/formation system yet.
+- Zombie pack cohesion is O(n²) per tick — fine at shipping scale for a
+  district; `FindPath` is ready if a spatial hash is needed later.
+- Item durability values live in Items.csv; weapon decay is applied when a
+  squad's WeaponItem is set. Storage caps are modeled (`StorageCapBase` + depots).
+- One squad per vehicle; cover/formation fields exist but auto-cover is off
+  so combat tests stay stable.

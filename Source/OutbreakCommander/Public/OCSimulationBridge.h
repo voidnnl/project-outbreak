@@ -102,6 +102,53 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
     bool CallEvacuationFlight();
 
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool StartCampaign(const FString& CampaignId);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool UpgradeBuilding(int32 BuildingId);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool BuildWallGate(int32 WallId);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool DesignateQuarantineZone(int32 District, bool bEnabled);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool ApplyDifficulty(const FString& DifficultyId);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    void SetLanguage(const FString& Lang);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool DismissHint();
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool VirusInfectTile(int32 X, int32 Y);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool VirusContaminate(int32 X, int32 Y);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    bool VirusBoostHorde();
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    int32 VirusMutate(const FString& FromType, const FString& ToType, int32 Count);
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    int32 GetLeaderboardScore() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    FString Localize(const FString& Key) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    FString GetSeason() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
+    FString GetMusicState() const;
+
+    void NewGameEx(const oc::FSimConfig& Cfg);
+
     // --- save / load / report ---
     UFUNCTION(BlueprintCallable, Category = "Outbreak|Sim")
     bool SaveGame(const FString& Path);

@@ -1,0 +1,15 @@
+Id,CampaignId,Title,Description,Kind,Target,TargetCount,UnlockDay,HintKey,Required
+tut_survey,tutorial,Survey the city,"Pan, zoom, and rotate the camera. The city is yours to command.",start,,1,0,hint_camera,1
+tut_farm,tutorial,Build a farm,"Open the build menu and place an Urban Farm so the city can eat.",build,farm,1,0,hint_build,1
+tut_militia,tutorial,Raise a militia,"Recruit a militia squad from the military panel.",recruit,militia,1,0,hint_military,1
+tut_survive,tutorial,Survive the night,"Hold the city for one full day.",survive_days,,1,0,hint_survive,1
+story_quarantine,story_kingsport,Enact quarantine,"Slow the spread: toggle the Quarantine emergency policy.",policy,quarantine,1,0,hint_policy,1
+story_walls,story_kingsport,Raise the walls,"Drag a wall line of at least 8 segments around a district.",wall,,8,0,hint_walls,1
+story_militia,story_kingsport,Raise a militia,"Recruit a militia squad to hunt Patient Zero's wake.",recruit,militia,1,0.5,hint_military,1
+story_farm,story_kingsport,Secure food,"Build two urban farms.",build,farm,2,0,hint_build,1
+story_research,story_kingsport,Start triage research,"Begin researching Triage Protocols at a medical center.",research,triage,1,1,hint_research,0
+story_survive,story_kingsport,Hold Kingsport,"Survive 30 in-game days (30 real minutes at 1x) without falling.",survive_days,,30,0,hint_survive,1
+port_hold,story_porthope,Hold Port Hope,"Survive 20 days against the virulent strain.",survive_days,,20,0,hint_survive,1
+port_vaccine,story_porthope,Rush the vaccine,"Research the Vaccine Program.",research,vaccine,1,0,hint_research,1
+harbor_power,story_grayharbor,Restore power,"Keep at least one powered generator or plant online.",power,,1,0,hint_power,1
+harbor_hold,story_grayharbor,Hold Gray Harbor,"Survive 15 days in the blackout.",survive_days,,15,0,hint_survive,1

@@ -45,9 +45,9 @@
 | `Source/SimulationCore/Public/oc/` | `SimTypes.h`, `DataTables.h`, `Simulation.h` — the whole public API |
 | `Source/SimulationCore/Private/` | `DataTables.cpp` (CSV loader/validator), `Simulation.cpp` (lifecycle, world gen, commands, spawning), `SimulationStep.cpp` (per-tick systems), `SimulationMilitary.cpp` (military commands + strikes), `SimulationIO.cpp` (save/load + command replay), `SimulationReport.cpp` (after-action report) |
 | `Source/OutbreakCommander/` | UE presentation: game mode/state/instance, bridge, god pawn, controller, actors, view manager |
-| `Content/Data/` | 12 CSV data tables (shared with UE DataTables) |
+| `Content/Data/` | CSV data tables (shared with UE DataTables) |
 | `Content/Assets/`, `Content/Audio/`, `Content/Fonts/` | CC0/OFL assets (see `Content/Assets/ATTRIBUTION.md`) |
-| `tests/` | Self-contained unit test runner (34 tests, 371 checks) |
+| `tests/` | Self-contained unit test runner (500+ checks) |
 | `tools/` | `sim_cli.cpp` (full-game headless demo + report), `fetch_assets.py` (re-downloads all assets) |
 | `docs/` | Design docs (engine, architecture, data, AI/tactics, roadmap) |
 
@@ -72,9 +72,11 @@ UE frame (AOCGameMode::Tick, real dt)
                  ├─ TickInternational         // aid/trade cooldowns + world news
                  ├─ PendingStrikeTick         // airstrike/nuke delays
                  ├─ UpdateContamination       // ground contamination spread/decay
+                 ├─ TickSeasons / TickCampaign / TickHints / TickDemoMode
                  ├─ TickMorale
                  ├─ UpdateStats
-                 └─ CheckGameResult           // win (eradication/containment) / lose
+                 ├─ CheckGameResult           // win (eradication/containment/evac) / lose
+                 └─ TickAchievements / ClampResourcesToStorage
        └─ broadcast new events + snapshots    // HUD/alerts
 ```
 

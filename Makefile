@@ -5,7 +5,7 @@
 # into the UE5 game via Source/SimulationCore/SimulationCore.Build.cs.
 #
 # Targets:
-#   make test   - build and run the unit test suite (uses Content/Data)
+#   make test   - build and run the unit test suite (500+ checks, Content/Data)
 #   make demo   - build and run a scripted headless playthrough
 #   make clean
 
@@ -18,7 +18,8 @@ SIM_SRC  := Source/SimulationCore/Private/DataTables.cpp \
             Source/SimulationCore/Private/SimulationStep.cpp \
             Source/SimulationCore/Private/SimulationMilitary.cpp \
             Source/SimulationCore/Private/SimulationIO.cpp \
-            Source/SimulationCore/Private/SimulationReport.cpp
+            Source/SimulationCore/Private/SimulationReport.cpp \
+            Source/SimulationCore/Private/SimulationSystems.cpp
 # NOTE: SimulationCoreModule.cpp is UE-only (IMPLEMENT_MODULE) and is
 # intentionally NOT in this list.
 

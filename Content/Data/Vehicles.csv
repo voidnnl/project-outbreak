@@ -1,0 +1,6 @@
+Id,Name,CostMoney,CostMaterials,CostFuel,Hp,SpeedTilesPerSec,DamagePerSec,AmmoPerSec,RangeTiles,Seats,Unlock,Description
+truck,Supply Truck,500,200,5,150,2,0,0,0,4,none,"Logistics; carries squads fast, no combat"
+apc,APC,3000,1500,20,400,1.2,15,2,6,8,unlock_vehicle_apc,"Armored personnel carrier"
+tank,Tank,15000,8000,100,2000,0.5,60,4,8,4,unlock_vehicle_tank,"Heavy armor; crushes through hordes"
+helicopter,Attack Helicopter,25000,10000,200,600,4,40,3,10,2,unlock_vehicle_helicopter,"Air support; ignores walls and terrain"
+drone,Recon Drone,1000,500,2,50,3,5,0.5,4,0,unlock_vehicle_drone,"Recon and light strikes"

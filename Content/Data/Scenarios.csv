@@ -1,0 +1,7 @@
+Id,Name,CityName,Description,InitialPopulation,PatientZeroIncubationDays,ZombieSpeedMultiplier,InfectionRateMultiplier,ResourceScarcityMultiplier,StartHordes
+calm,The Quiet Before,Millbrook,"A normal Tuesday. Then the fever came.",150,0.1,1,1,1,0
+standard,Standard Outbreak,Kingsport,"Patient Zero arrives on a business flight.",150,0.1,1,1,1,0
+virulent,Virulent Strain,Port Hope,"A fast-mutating virus. Incubation is hours, not days.",200,0.04,1.5,2,1.2,1
+blackout,Blackout,Gray Harbor,"The outbreak starts during a city-wide power failure.",120,0.1,1,1,1,0
+overrun,Overrun,Deadwood,"The military is already overwhelmed. Survive as long as you can.",250,0.08,1.3,1.5,1.5,2
+sandbox,Sandbox,Freeport,"Custom rules. Everything is configurable.",150,0.1,1,1,1,0

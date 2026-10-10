@@ -1,0 +1,6 @@
+Id,Name,CostMoney,CostAmmo,FoodPerDay,Hp,DamagePerSec,AmmoPerSec,RangeTiles,SpeedTilesPerSec,VisionTiles,SquadSize,TrainingSeconds,WeaponItem,Unlock,Description
+militia,Militia Squad,300,20,1,30,3,0.5,4,1.2,10,6,60,,none,"Armed citizens; cheap and fast to train"
+soldier,Soldier Squad,800,100,2,60,8,1,6,1,12,6,180,,none,"Professional infantry squad"
+specops,Spec Ops Team,2500,400,4,100,20,2,8,1.4,16,4,600,rifle,unlock_specops,"Elite operators; requires Special Forces tech"
+medic,Medic Team,600,50,2,40,0,0,6,1,12,4,120,,none,"Field medics; heal citizens, no combat"
+engineer,Engineer Team,700,50,2,50,2,0.5,4,1,10,4,120,,none,"Repairs walls and buildings"

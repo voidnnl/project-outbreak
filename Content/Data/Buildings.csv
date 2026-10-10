@@ -1,0 +1,13 @@
+Id,Name,CostMoney,CostMaterials,PowerGeneration,PowerConsumption,WaterProduction,WaterConsumption,FoodProduction,FuelConsumption,Function,Housing,Jobs,BuildTimeSeconds,MaxHp,Width,Height,Description
+house,Residential House,150,40,0,1,0,0.5,0,0,housing,8,0,20,200,2,2,"Shelters 8 citizens"
+apartment,Apartment Block,900,300,0,4,0,2,0,0,housing,40,0,60,600,3,3,"Dense housing for 40 citizens"
+power_plant,Coal Power Plant,5000,2000,100,5,0,0,0,20,power,0,20,300,1000,4,4,"Generates 100 MW but burns 20 fuel per day"
+generator,Emergency Generator,800,300,20,0,0,0,0,5,power,0,4,40,300,2,2,"Small backup power source burning 5 fuel per day"
+solar_panel,Solar Panel,400,150,4,0,0,0,0,0,power,0,2,30,150,2,2,"Clean 4 MW; day/night cycle support is Phase 2"
+medical_center,Medical Center,3000,1500,0,10,0,0,0,0,medical,0,30,120,600,3,3,"Cures latent infections, converts materials to medicine, generates research"
+farm,Urban Farm,1000,300,0,2,0,0,15,0,food,0,10,60,400,3,2,"Produces 15 food per day"
+water_purification,Water Purification Plant,1500,500,0,4,30,0,0,0,water,0,8,90,500,3,3,"Produces 30 water per day"
+supply_depot,Supply Depot,1200,600,0,1,0,0,0,0,storage,0,15,60,500,3,3,"Phase 2: storage caps and trade hub"
+barracks,Barracks,2500,1200,0,5,0,0,0,0,military,20,40,150,800,4,3,"Phase 2: recruit and house soldiers"
+workshop,Workshop,1500,700,0,3,0,0,0,0,crafting,0,25,90,500,3,3,"Crafts items and ammunition from materials"
+research_lab,Research Lab,4000,2500,0,15,0,0,0,0,research,0,40,180,700,3,3,"Generates 15 research per day"

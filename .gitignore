@@ -1,0 +1,25 @@
+# Build artifacts (standalone sim core)
+/build/
+
+# Unreal Engine
+/Binaries/
+/Intermediate/
+/Saved/
+/DerivedDataCache/
+/Content/Collections/
+/Content/Developers/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# IDE
+.vs/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test temp dirs (tests use the system temp dir, but just in case)
+/oc_test_*

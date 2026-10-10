@@ -1,0 +1,36 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.4",
+	"Category": "Game",
+	"Description": "Outbreak Commander - 3D city-management and zombie-survival game. Command the city, contain the virus, save humanity.",
+	"Modules": [
+		{
+			"Name": "OutbreakCommander",
+			"Type": "Runtime",
+			"Phase": "Default"
+		},
+		{
+			"Name": "SimulationCore",
+			"Type": "Runtime",
+			"Phase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"Windows",
+		"Linux"
+	]
+}

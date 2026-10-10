@@ -1,0 +1,9 @@
+Id,Name,Inputs,Outputs,TimeSeconds,Description
+bandages,Bandages,materials:5,bandage:2,60,"Craft bandages from materials"
+medkits,Medkits,materials:10;medicine:5,medkit:1,120,"Craft a medkit"
+rifles,Rifles,materials:30;scrap:10,rifle:1,300,"Manufacture assault rifles"
+shotguns,Shotguns,materials:25;scrap:5,shotgun:1,240,"Manufacture shotguns"
+kevlar,Kevlar Vests,materials:20,kevlar:1,240,"Manufacture body armor"
+radios,Radios,materials:15;battery:2,radio:1,180,"Assemble field radios"
+scrap_salvage,Scrap Salvage,materials:10,scrap:5,60,"Break down materials into scrap components"
+ammo,Ammunition,materials:20,ammo:50,180,"Manufacture 50 rounds of ammunition"

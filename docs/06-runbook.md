@@ -5,8 +5,11 @@
 ```
 make test    # unit suite (500+ checks)
 make demo    # 120-day scripted playthrough + after-action report
+make play    # god-view HTTP server on 0.0.0.0:8080 (Content/Web + /api/*)
 make clean
 ```
+
+`make play` runs the real simulation core. Open the printed URL; the canvas is pan/zoom/WASD, drag walls, place buildings, recruit, research, policies. Save slot: `build/web_slot.sav`.
 
 Requires g++ with C++17. Data path defaults to `Content/Data`.
 

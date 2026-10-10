@@ -10,7 +10,7 @@ Headless: `make test` and `make demo` on any machine with g++. UE `.uasset` cont
 
 ## (b) Tests
 
-**503 checks, 0 failures** (`make test`). New coverage: seasons, localization (EN/DE/FA/AR), co-op roles, tutorial campaign, achievements, heatmap, versus extras, building upgrades, wall gates/corners, quarantine zones, A* pathfinding, demo mode, evacuation win, difficulty presets, command replay of new verbs, save/load v2.
+**509 checks, 0 failures** (`make test`). New coverage: seasons, localization (EN/DE/FA/AR), co-op roles, tutorial campaign, achievements, heatmap, versus extras, building upgrades, wall gates/corners, quarantine zones, A* pathfinding, demo mode, evacuation win, difficulty presets, command replay of new verbs, save/load v2, item durability, citizen-type needs (flag default off). `make play` serves a canvas god-view over the same sim.
 
 ## (c) Demo
 

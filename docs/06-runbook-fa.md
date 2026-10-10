@@ -5,6 +5,7 @@
 ```
 make test
 make demo
+make play    # نمای فرمانده در مرورگر، پورت 8080
 ```
 
 کامپایلر C++17. داده‌ها در `Content/Data`.

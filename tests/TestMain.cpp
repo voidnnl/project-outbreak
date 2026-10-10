@@ -1207,6 +1207,25 @@ void TestStoryMissionAndCorners() {
     CHECK(Sim.StartResearch("triage"));
 }
 
+void TestItemDurabilityAndNeedsFlag() {
+    oc::FSimulation Sim = MakeSim(g_DataDir);
+    CHECK(Sim.DebugAddItem("rifle", 2));
+    CHECK(Sim.ItemCount("rifle") == 2);
+    const float D0 = Sim.Inventory()[0].Durability;
+    CHECK(D0 > 0.9f);
+    // Wear is a no-op when the squad has no WeaponItem (militia). Needs flag off: types assigned.
+    bool bFarmer = false;
+    for (const auto& C : Sim.Citizens()) if (C.TypeId == "farmer") bFarmer = true;
+    CHECK(bFarmer);
+    const std::string Dir = MakeTempData("needs", {{"CitizenTypeNeedsEnabled", "1"}, {"WinQuietDays", "1000"}});
+    oc::FSimulation N;
+    CHECK(N.LoadData(Dir));
+    oc::FSimConfig Cfg; Cfg.Seed = 3; Cfg.ScenarioId = ""; Cfg.bStartWithPatientZero = false;
+    N.NewGame(Cfg);
+    RunDays(N, 1.f);
+    CHECK(N.GetResult() == oc::EGameResult::Ongoing);
+}
+
 void TestAdaptiveDifficultyOffByDefault() {
     oc::FSimulation Sim = MakeSim(g_DataDir);
     CHECK_NEAR(Sim.GetStats().DifficultyBias, 1.f, 0.001f);
@@ -1543,6 +1562,7 @@ int main(int argc, char** argv) {
     RUN_TEST(TestSaveLoadExtended);
     RUN_TEST(TestStoryMissionAndCorners);
     RUN_TEST(TestAdaptiveDifficultyOffByDefault);
+    RUN_TEST(TestItemDurabilityAndNeedsFlag);
 
     std::printf("\n%d checks, %d failures\n", g_Checks, g_Failures);
     return g_Failures == 0 ? 0 : 1;

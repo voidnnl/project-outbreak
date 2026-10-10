@@ -534,6 +534,21 @@ void FSimulation::TickAdaptiveDifficulty() {
 // A* pathfinding (opt-in; default off so wall-slide tests stay stable)
 // ---------------------------------------------------------------------------
 
+void FSimulation::WearItem(const std::string& ItemId, float Amount) {
+    if (ItemId.empty() || Amount <= 0.f) return;
+    for (auto It = InventoryList.begin(); It != InventoryList.end(); ++It) {
+        if (It->ItemId != ItemId) continue;
+        const FItemDef* Def = Tables.FindItem(ItemId);
+        const float MaxD = (Def && Def->Durability > 0) ? static_cast<float>(Def->Durability) : 100.f;
+        It->Durability -= Amount / MaxD;
+        if (It->Durability > 0.f) return;
+        --It->Count;
+        It->Durability = 1.f;
+        if (It->Count <= 0) InventoryList.erase(It);
+        return;
+    }
+}
+
 bool FSimulation::FindPath(i32 X1, i32 Y1, i32 X2, i32 Y2, std::vector<std::pair<i32, i32>>& Out) const {
     Out.clear();
     if (!IsInside(X1, Y1) || !IsInside(X2, Y2)) return false;

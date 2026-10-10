@@ -7,6 +7,7 @@
 # Targets:
 #   make test   - build and run the unit test suite (500+ checks, Content/Data)
 #   make demo   - build and run a scripted headless playthrough
+#   make play   - god-view HTTP server on 0.0.0.0:8080 (Content/Web)
 #   make clean
 
 CXX      ?= g++
@@ -26,9 +27,16 @@ SIM_SRC  := Source/SimulationCore/Private/DataTables.cpp \
 BUILD    := build
 DATA_DIR := Content/Data
 
-.PHONY: all test demo clean
+.PHONY: all test demo play clean
 
 all: test demo
+
+$(BUILD)/sim_server: tools/sim_server.cpp $(SIM_SRC)
+	@mkdir -p $(BUILD)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+play: $(BUILD)/sim_server
+	./$(BUILD)/sim_server $(DATA_DIR) 8080
 
 $(BUILD)/sim_tests: tests/TestMain.cpp $(SIM_SRC)
 	@mkdir -p $(BUILD)

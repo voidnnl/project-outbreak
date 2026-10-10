@@ -16,6 +16,7 @@ The simulation core compiles and runs with a bare C++17 compiler:
 make test   # build + run the unit test suite (500+ checks)
 make demo   # play a full scripted 120-day game headless; prints the
             # procedural AFTER-ACTION REPORT (also saved to build/AfterActionReport.md)
+make play   # playable god-view in the browser (binds 0.0.0.0:8080, real sim core)
 ```
 
 ## What's in the game (simulation-complete)
@@ -54,7 +55,8 @@ Content/Fonts/               OFL fonts (Chakra Petch HUD, Orbitron title)
 Source/SimulationCore/       Pure C++17 game simulation (deterministic, unit-tested)
 Source/OutbreakCommander/    UE5 presentation layer (camera, input, actors, HUD bridge)
 tests/                       Unit tests for the sim core (self-contained runner, 500+ checks)
-tools/                       sim_cli.cpp (full-game demo), fetch_assets.py, steampipe/
+Content/Web/                 Canvas god-view served by `make play` (no Unreal required)
+tools/                       sim_cli.cpp (full-game demo), sim_server.cpp (god-view HTTP), fetch_assets.py, steampipe/
 docs/                        Engine, architecture, data, AI, roadmap, runbook, Steam, editor checklist, legal
 store/                       Steam capsules, hero, screenshots, store copy, trailer storyboard
 ```

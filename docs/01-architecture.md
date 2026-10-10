@@ -43,12 +43,13 @@
 | Path | Contents |
 |---|---|
 | `Source/SimulationCore/Public/oc/` | `SimTypes.h`, `DataTables.h`, `Simulation.h` — the whole public API |
-| `Source/SimulationCore/Private/` | `DataTables.cpp` (CSV loader/validator), `Simulation.cpp` (lifecycle, world gen, commands, spawning), `SimulationStep.cpp` (per-tick systems), `SimulationMilitary.cpp` (military commands + strikes), `SimulationIO.cpp` (save/load + command replay), `SimulationReport.cpp` (after-action report) |
+| `Source/SimulationCore/Private/` | `DataTables.cpp` (CSV loader/validator), `Simulation.cpp` (lifecycle, world gen, commands, spawning), `SimulationStep.cpp` (per-tick systems), `SimulationMilitary.cpp` (military commands + strikes), `SimulationIO.cpp` (save/load + command replay), `SimulationReport.cpp` (after-action report), `SimulationSystems.cpp` (campaign, seasons, localization, pathfinding, item wear) |
 | `Source/OutbreakCommander/` | UE presentation: game mode/state/instance, bridge, god pawn, controller, actors, view manager |
 | `Content/Data/` | CSV data tables (shared with UE DataTables) |
 | `Content/Assets/`, `Content/Audio/`, `Content/Fonts/` | CC0/OFL assets (see `Content/Assets/ATTRIBUTION.md`) |
 | `tests/` | Self-contained unit test runner (500+ checks) |
-| `tools/` | `sim_cli.cpp` (full-game headless demo + report), `fetch_assets.py` (re-downloads all assets) |
+| `tools/` | `sim_cli.cpp` (full-game headless demo + report), `sim_server.cpp` (playable HTTP god-view on 0.0.0.0), `fetch_assets.py` (re-downloads all assets) |
+| `Content/Web/` | Canvas commander UI served by `sim_server` (`make play`) |
 | `docs/` | Design docs (engine, architecture, data, AI/tactics, roadmap) |
 
 ## Tick flow

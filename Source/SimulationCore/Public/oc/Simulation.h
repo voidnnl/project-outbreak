@@ -308,6 +308,7 @@ public:
     i32 DebugAddObjective(const std::string& Id, const std::string& Kind, const std::string& Target, i32 Count);
     void DebugUnlockAchievement(const std::string& Id);
     void DebugSetSeason(const std::string& SeasonId);
+    bool DebugAddItem(const std::string& ItemId, i32 Count) { return AddItem(ItemId, Count); }
 
 private:
     void RunTick(float Dt);
@@ -371,6 +372,7 @@ private:
     bool IsDistrictQuarantined(i32 District) const;
     void ClampResourcesToStorage();
     void MarkWallCorners(size_t FromIndex);
+    void WearItem(const std::string& ItemId, float Amount);
 
     FDataTables Tables;
     FSimConfig Config;

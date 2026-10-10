@@ -313,11 +313,18 @@ void FSimulation::TickCitizens(float Dt) {
         // Needs. When the city has food/water, citizens eat and drink (need
         // recovers at the same rate it would decay); during a shortage the
         // need decays, doubled, until they starve.
-        const float HungerRate = BalanceF("HungerDecayPerDay", 0.2f) * Dt / SecPerDay;
+        float HungerMul = 1.f, ThirstMul = 1.f;
+        if (BalanceF("CitizenTypeNeedsEnabled", 0) >= 0.5f) {
+            if (const FCitizenTypeDef* Type = Tables.FindCitizenType(C.TypeId)) {
+                HungerMul = Type->NeedsHunger;
+                ThirstMul = Type->NeedsThirst;
+            }
+        }
+        const float HungerRate = BalanceF("HungerDecayPerDay", 0.2f) * HungerMul * Dt / SecPerDay;
         if (bFoodShortageTick) C.Hunger = Clamp01(C.Hunger - HungerRate * 2.f);
         else C.Hunger = Clamp01(C.Hunger + HungerRate);
         // Homes in districts without water service drain thirst faster.
-        float ThirstRate = BalanceF("ThirstDecayPerDay", 0.4f) * Dt / SecPerDay;
+        float ThirstRate = BalanceF("ThirstDecayPerDay", 0.4f) * ThirstMul * Dt / SecPerDay;
         bool bHomeDry = true;
         if (C.HomeId >= 0 && C.HomeId < static_cast<i32>(BuildingList.size()) &&
             !BuildingList[C.HomeId].bDemolished)
@@ -1006,6 +1013,7 @@ void FSimulation::TickMilitary(float Dt) {
                 if (Def->DamagePerSec > 0 && !bLowAmmo && ConsumeAmmo(AmmoCost)) {
                     Z.Hp -= Def->DamagePerSec * S.Size * DamageMod * Dt;
                     S.NoiseTimer = 2.f;  // gunfire noise attracts zombies
+                    if (!Def->WeaponItem.empty()) WearItem(Def->WeaponItem, AmmoCost);
                     if (Z.Hp <= 0.f) KillZombie(TargetZ, S.Id);
                 }
             } else {
